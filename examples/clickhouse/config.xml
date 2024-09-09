@@ -1,0 +1,4 @@
+<clickhouse>
+    <user_defined_executable_functions_config>functions/*.xml</user_defined_executable_functions_config>
+    <user_scripts_path>./bin</user_scripts_path>
+</clickhouse>

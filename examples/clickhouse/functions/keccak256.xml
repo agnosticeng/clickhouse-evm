@@ -1,0 +1,14 @@
+<functions>
+    <function>
+        <type>executable_pool</type>
+        <pool_size>1</pool_size>
+        <name>keccak256</name>
+        <argument>
+            <name>str</name>
+            <type>String</type>
+        </argument>
+        <return_type>String</return_type>
+        <format>Native</format>
+        <command>agnostic-clickhouse-udf function keccak256</command>
+    </function>
+</functions>

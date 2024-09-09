@@ -1,0 +1,18 @@
+<functions>
+    <function>
+        <type>executable_pool</type>
+        <pool_size>1</pool_size>
+        <name>evm_decode_event</name>
+        <argument>
+            <name>topics</name>
+            <type>Array(String)</type>
+        </argument>
+        <argument>
+            <name>data</name>
+            <type>String</type>
+        </argument>
+        <return_type>String</return_type>
+        <format>Native</format>
+        <command>agnostic-clickhouse-udf function evm-decode-event --abi-file examples/abis/erc20.json</command>
+    </function>
+</functions>

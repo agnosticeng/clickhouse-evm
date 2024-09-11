@@ -2,7 +2,8 @@ with
     q0 as (
         select 
             arrayMap(x -> coalesce(x, ''), log.topics) as topics,
-            coalesce(log.data, '') as data
+            coalesce(log.data, '') as data,
+            'Transfer(indexed address, indexed address, uint256)' as abi
         from file('./tmp/evm_blocks/*.parquet')
         array join transactions as tx 
         array join tx.receipt.logs as log

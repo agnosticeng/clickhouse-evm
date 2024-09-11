@@ -6,6 +6,9 @@ import (
 	"os"
 
 	"github.com/ClickHouse/ch-go/proto"
+	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/abi_provider"
+	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/abi_provider/impl"
+	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/memo"
 	"github.com/agnosticeng/evmabi/json"
 	"github.com/urfave/cli/v2"
 )
@@ -14,39 +17,37 @@ func Command() *cli.Command {
 	return &cli.Command{
 		Name: "evm-decode-event",
 		Flags: []cli.Flag{
-			&cli.StringFlag{Name: "abi-file", Required: true},
+			&cli.StringFlag{Name: "abi-provider"},
 		},
 		Action: func(ctx *cli.Context) error {
+			var cache = memo.KeyedErr[string, abi_provider.ABIProvider](
+				func(key string) (abi_provider.ABIProvider, error) {
+					if len(key) == 0 {
+						return impl.NewABIProvider(ctx.String("abi-provider"))
+					} else {
+						return impl.NewABIProvider(key)
+					}
+				},
+			)
+
 			var (
 				buf proto.Buffer
 
 				inputTopicsCol  = proto.NewArray(new(proto.ColBytes))
 				inputDataCol    = new(proto.ColBytes)
+				inputsAbiCol    = new(proto.ColStr)
 				outputResultCol = new(proto.ColBytes)
 
 				input = proto.Results{
 					{Name: "topics", Data: inputTopicsCol},
 					{Name: "data", Data: inputDataCol},
+					{Name: "abi", Data: inputsAbiCol},
 				}
 
 				output = proto.Input{
 					{Name: "result", Data: outputResultCol},
 				}
 			)
-
-			f, err := os.Open(ctx.String("abi-file"))
-
-			if err != nil {
-				return err
-			}
-
-			defer f.Close()
-
-			_abi, err := ParseIndexedABI(f)
-
-			if err != nil {
-				return err
-			}
 
 			for {
 				var (
@@ -67,11 +68,41 @@ func Command() *cli.Command {
 				}
 
 				for i := 0; i < input.Rows(); i++ {
-					var js, err = decodeEvent(
-						inputTopicsCol.Row(i),
-						inputDataCol.Row(i),
-						_abi,
+					var (
+						topics = inputTopicsCol.Row(i)
+						data   = inputDataCol.Row(i)
+						key    = inputsAbiCol.Row(i)
 					)
+
+					p, err := cache(key)
+
+					if err != nil {
+						return err
+					}
+
+					evt, err := p.Event(string(topics[0]))
+
+					if err != nil {
+						return err
+					}
+
+					if evt == nil {
+						outputResultCol.Append([]byte(key))
+						continue
+					}
+
+					n, err := json.DecodeLog(topics, data, *evt)
+
+					if err != nil {
+						return err
+					}
+
+					if !n.Exists() {
+						outputResultCol.Append([]byte(`{"hello": "cc"}`))
+						continue
+					}
+
+					js, err := n.MarshalJSON()
 
 					if err != nil {
 						return err
@@ -103,26 +134,4 @@ func Command() *cli.Command {
 			}
 		},
 	}
-}
-
-func decodeEvent(topics [][]byte, data []byte, _abi IndexedABI) ([]byte, error) {
-	var eventDesc = _abi.EventsSigHashIndex[string(topics[0])]
-
-	if eventDesc == nil {
-		return []byte("{}"), nil
-	}
-
-	evt, err := json.DecodeLog(data, topics, *eventDesc)
-
-	if err != nil {
-		return nil, err
-	}
-
-	js, err := evt.MarshalJSON()
-
-	if err != nil {
-		return nil, err
-	}
-
-	return js, nil
 }

@@ -5,9 +5,11 @@ go 1.23.1
 require (
 	github.com/ClickHouse/ch-go v0.62.0 // indirect
 	github.com/agnosticeng/evmabi v0.0.0-20240909093734-7109445340a5 // indirect
+	github.com/alecthomas/participle/v2 v2.1.1 // indirect
 	github.com/btcsuite/btcd/btcec/v2 v2.3.4 // indirect
 	github.com/bytedance/sonic v1.12.2 // indirect
 	github.com/bytedance/sonic/loader v0.2.0 // indirect
+	github.com/bzick/tokenizer v1.4.0 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
 	github.com/cloudwego/iasm v0.2.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.4 // indirect
@@ -25,6 +27,7 @@ require (
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/urfave/cli/v2 v2.27.4 // indirect
+	github.com/wolfeidau/stringtokenizer v1.0.0 // indirect
 	github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1 // indirect
 	go.opentelemetry.io/otel v1.29.0 // indirect
 	go.opentelemetry.io/otel/trace v1.29.0 // indirect
@@ -33,3 +36,5 @@ require (
 	golang.org/x/sys v0.25.0 // indirect
 	golang.org/x/text v0.18.0 // indirect
 )
+
+replace github.com/agnosticeng/evmabi => ../evmabi

@@ -1,4 +1,4 @@
-package evm_decode_event
+package indexed_abi
 
 import (
 	"io"
@@ -6,7 +6,7 @@ import (
 	eth_abi "github.com/ethereum/go-ethereum/accounts/abi"
 )
 
-func ParseIndexedABI(r io.Reader) (IndexedABI, error) {
+func JSON(r io.Reader) (IndexedABI, error) {
 	_abi, err := eth_abi.JSON(r)
 
 	if err != nil {

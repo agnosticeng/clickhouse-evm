@@ -2,6 +2,8 @@ github.com/ClickHouse/ch-go v0.62.0 h1:eXH0hytXeCEEZHgMvOX9IiW7wqBb4w1MJMp9rArbk
 github.com/ClickHouse/ch-go v0.62.0/go.mod h1:uzso52/PD9+gZj7tL6XAo8/EYDrx7CIwNF4c6PnO6S0=
 github.com/agnosticeng/evmabi v0.0.0-20240909093734-7109445340a5 h1:S5OdwQREfJewfJRf+5YnoYgr2UZDWdS/4g+0WnCRemI=
 github.com/agnosticeng/evmabi v0.0.0-20240909093734-7109445340a5/go.mod h1:5AomZInHURscVT85kPQqdOjsgHIRAU58/nla5wc1HdY=
+github.com/alecthomas/participle/v2 v2.1.1 h1:hrjKESvSqGHzRb4yW1ciisFJ4p3MGYih6icjJvbsmV8=
+github.com/alecthomas/participle/v2 v2.1.1/go.mod h1:Y1+hAs8DHPmc3YUFzqllV+eSQ9ljPTk0ZkPMtEdAx2c=
 github.com/btcsuite/btcd/btcec/v2 v2.3.4 h1:3EJjcN70HCu/mwqlUsGK8GcNVyLVxFDlWurTXGPFfiQ=
 github.com/btcsuite/btcd/btcec/v2 v2.3.4/go.mod h1:zYzJ8etWJQIv1Ogk7OzpWjowwOdXY1W/17j2MW85J04=
 github.com/bytedance/sonic v1.12.2 h1:oaMFuRTpMHYLpCntGca65YWt5ny+wAceDERTkT2L9lg=
@@ -9,6 +11,8 @@ github.com/bytedance/sonic v1.12.2/go.mod h1:B8Gt/XvtZ3Fqj+iSKMypzymZxw/FVwgIGKz
 github.com/bytedance/sonic/loader v0.1.1/go.mod h1:ncP89zfokxS5LZrJxl5z0UJcsk4M4yY2JpfqGeCtNLU=
 github.com/bytedance/sonic/loader v0.2.0 h1:zNprn+lsIP06C/IqCHs3gPQIvnvpKbbxyXQP1iU4kWM=
 github.com/bytedance/sonic/loader v0.2.0/go.mod h1:ncP89zfokxS5LZrJxl5z0UJcsk4M4yY2JpfqGeCtNLU=
+github.com/bzick/tokenizer v1.4.0 h1:eEqnfsoEpOdg3tvUn92T7cfaWZcyQJQkJBBPSlyTvAY=
+github.com/bzick/tokenizer v1.4.0/go.mod h1:HYrKg9GGNb0/MCf7eGmz6ulvsxFfgyN+Ve3MqV2h5Zs=
 github.com/cloudwego/base64x v0.1.4 h1:jwCgWpFanWmN8xoIUHa2rtzmkd5J2plF/dnLS6Xd/0Y=
 github.com/cloudwego/base64x v0.1.4/go.mod h1:0zlkT4Wn5C6NdauXdJRhSKRlJvmclQ1hhJgA0rcu/8w=
 github.com/cloudwego/iasm v0.2.0 h1:1KNIy1I1H9hNNFEEH3DVnI4UujN+1zjpuk6gwHLTssg=
@@ -55,6 +59,8 @@ github.com/twitchyliquid64/golang-asm v0.15.1 h1:SU5vSMR7hnwNxj24w34ZyCi/FmDZTkS
 github.com/twitchyliquid64/golang-asm v0.15.1/go.mod h1:a1lVb/DtPvCB8fslRZhAngC2+aY1QWCk3Cedj/Gdt08=
 github.com/urfave/cli/v2 v2.27.4 h1:o1owoI+02Eb+K107p27wEX9Bb8eqIoZCfLXloLUSWJ8=
 github.com/urfave/cli/v2 v2.27.4/go.mod h1:m4QzxcD2qpra4z7WhzEGn74WZLViBnMpb1ToCAKdGRQ=
+github.com/wolfeidau/stringtokenizer v1.0.0 h1:8PYjzcgygh4YBFL+U83NoTryRUTlzkkuXEBoIC1Kxbk=
+github.com/wolfeidau/stringtokenizer v1.0.0/go.mod h1:I2nL52lD2T3QImxzIcJq9LASGjhGDiQMqwYbDGh5fv8=
 github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1 h1:gEOO8jv9F4OT7lGCjxCBTO/36wtF6j2nSip77qHd4x4=
 github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1/go.mod h1:Ohn+xnUBiLI6FVj/9LpzZWtj1/D6lUovWYBkxHVV3aM=
 go.opentelemetry.io/otel v1.29.0 h1:PdomN/Al4q/lN6iBJEN3AwPvUiHPMlt93c8bqTG5Llw=

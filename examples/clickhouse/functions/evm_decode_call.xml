@@ -1,0 +1,22 @@
+<functions>
+    <function>
+        <type>executable_pool</type>
+        <pool_size>16</pool_size>
+        <name>evm_decode_call</name>
+        <argument>
+            <name>input</name>
+            <type>String</type>
+        </argument>
+        <argument>
+            <name>output</name>
+            <type>String</type>
+        </argument>
+        <argument>
+            <name>abi</name>
+            <type>String</type>
+        </argument>
+        <return_type>String</return_type>
+        <format>Native</format>
+        <command>agnostic-clickhouse-udf function evm-decode-call</command>
+    </function>
+</functions>

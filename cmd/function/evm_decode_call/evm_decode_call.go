@@ -1,4 +1,4 @@
-package evm_decode_event
+package evm_decode_call
 
 import (
 	"errors"
@@ -15,7 +15,7 @@ import (
 
 func Command() *cli.Command {
 	return &cli.Command{
-		Name: "evm-decode-event",
+		Name: "evm-decode-call",
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "abi-provider"},
 		},
@@ -33,14 +33,14 @@ func Command() *cli.Command {
 			var (
 				buf proto.Buffer
 
-				inputTopicsCol  = proto.NewArray(new(proto.ColBytes))
 				inputDataCol    = new(proto.ColBytes)
+				outputDataCol   = new(proto.ColBytes)
 				inputsAbiCol    = new(proto.ColStr)
 				outputResultCol = new(proto.ColBytes)
 
 				input = proto.Results{
-					{Name: "topics", Data: inputTopicsCol},
-					{Name: "data", Data: inputDataCol},
+					{Name: "input", Data: inputDataCol},
+					{Name: "output", Data: outputDataCol},
 					{Name: "abi", Data: inputsAbiCol},
 				}
 
@@ -69,8 +69,8 @@ func Command() *cli.Command {
 
 				for i := 0; i < input.Rows(); i++ {
 					var (
-						topics = inputTopicsCol.Row(i)
-						data   = inputDataCol.Row(i)
+						input  = inputDataCol.Row(i)
+						output = outputDataCol.Row(1)
 						key    = inputsAbiCol.Row(i)
 					)
 
@@ -80,18 +80,18 @@ func Command() *cli.Command {
 						return err
 					}
 
-					evt, err := p.Event(string(topics[0]))
+					meth, err := p.Method(string(input[:4]))
 
 					if err != nil {
 						return err
 					}
 
-					if evt == nil {
+					if meth == nil {
 						outputResultCol.Append([]byte("{}"))
 						continue
 					}
 
-					n, err := json.DecodeLog(topics, data, *evt)
+					n, err := json.DecodeTrace(input, output, *meth)
 
 					if err != nil {
 						return err
@@ -126,8 +126,8 @@ func Command() *cli.Command {
 
 				proto.Reset(
 					&buf,
-					inputTopicsCol,
 					inputDataCol,
+					outputDataCol,
 					inputsAbiCol,
 					outputResultCol,
 				)

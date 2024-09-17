@@ -2,6 +2,8 @@ github.com/ClickHouse/ch-go v0.62.0 h1:eXH0hytXeCEEZHgMvOX9IiW7wqBb4w1MJMp9rArbk
 github.com/ClickHouse/ch-go v0.62.0/go.mod h1:uzso52/PD9+gZj7tL6XAo8/EYDrx7CIwNF4c6PnO6S0=
 github.com/agnosticeng/evmabi v0.0.0-20240909093734-7109445340a5 h1:S5OdwQREfJewfJRf+5YnoYgr2UZDWdS/4g+0WnCRemI=
 github.com/agnosticeng/evmabi v0.0.0-20240909093734-7109445340a5/go.mod h1:5AomZInHURscVT85kPQqdOjsgHIRAU58/nla5wc1HdY=
+github.com/agnosticeng/evmabi v0.1.0 h1:LOUOTDCSWMn+AnWgPcOSuq33nNIdhnG0KnHvAWm9O6Y=
+github.com/agnosticeng/evmabi v0.1.0/go.mod h1:79bKiAz0ga7DYPvbruwhxXXgjP8jwIQyeTqtGrTxUgc=
 github.com/agnosticeng/panicsafe v0.4.0 h1:dsFze/+9IWP1dYDeybxGyufMIrNHpBFIpj25/6rXzbI=
 github.com/agnosticeng/panicsafe v0.4.0/go.mod h1:dXWabTdUv+kz5D/Uj+SHc3C6H6O/XpnLStkrRalYxZk=
 github.com/alecthomas/participle/v2 v2.1.1 h1:hrjKESvSqGHzRb4yW1ciisFJ4p3MGYih6icjJvbsmV8=

@@ -4,7 +4,7 @@ go 1.23.1
 
 require (
 	github.com/ClickHouse/ch-go v0.62.0 // indirect
-	github.com/agnosticeng/evmabi v0.0.0-20240909093734-7109445340a5 // indirect
+	github.com/agnosticeng/evmabi v0.1.0 // indirect
 	github.com/agnosticeng/panicsafe v0.4.0 // indirect
 	github.com/alecthomas/participle/v2 v2.1.1 // indirect
 	github.com/btcsuite/btcd/btcec/v2 v2.3.4 // indirect
@@ -39,5 +39,3 @@ require (
 	golang.org/x/sys v0.25.0 // indirect
 	golang.org/x/text v0.18.0 // indirect
 )
-
-replace github.com/agnosticeng/evmabi => ../evmabi

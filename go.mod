@@ -3,19 +3,24 @@ module github.com/agnosticeng/agnostic-clickhouse-udf
 go 1.23.1
 
 require (
-	github.com/ClickHouse/ch-go v0.62.0 // indirect
-	github.com/agnosticeng/evmabi v0.1.0 // indirect
-	github.com/agnosticeng/panicsafe v0.4.0 // indirect
-	github.com/alecthomas/participle/v2 v2.1.1 // indirect
+	github.com/ClickHouse/ch-go v0.62.0
+	github.com/agnosticeng/evmabi v0.1.0
+	github.com/agnosticeng/panicsafe v0.5.0
+	github.com/ethereum/go-ethereum v1.14.8
+	github.com/samber/lo v1.47.0
+	github.com/sourcegraph/conc v0.3.0
+	github.com/urfave/cli/v2 v2.27.4
+	github.com/veqryn/slog-context v0.7.0
+)
+
+require (
 	github.com/btcsuite/btcd/btcec/v2 v2.3.4 // indirect
 	github.com/bytedance/sonic v1.12.2 // indirect
 	github.com/bytedance/sonic/loader v0.2.0 // indirect
-	github.com/bzick/tokenizer v1.4.0 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
 	github.com/cloudwego/iasm v0.2.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.4 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.3.0 // indirect
-	github.com/ethereum/go-ethereum v1.14.8 // indirect
 	github.com/go-faster/city v1.0.1 // indirect
 	github.com/go-faster/errors v0.7.1 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
@@ -25,15 +30,13 @@ require (
 	github.com/klauspost/cpuid/v2 v2.2.8 // indirect
 	github.com/pierrec/lz4/v4 v4.1.21 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
-	github.com/samber/lo v1.47.0 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
-	github.com/urfave/cli/v2 v2.27.4 // indirect
-	github.com/veqryn/slog-context v0.7.0 // indirect
 	github.com/wolfeidau/stringtokenizer v1.0.0 // indirect
 	github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1 // indirect
 	go.opentelemetry.io/otel v1.29.0 // indirect
 	go.opentelemetry.io/otel/trace v1.29.0 // indirect
+	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/arch v0.10.0 // indirect
 	golang.org/x/crypto v0.27.0 // indirect
 	golang.org/x/sys v0.25.0 // indirect

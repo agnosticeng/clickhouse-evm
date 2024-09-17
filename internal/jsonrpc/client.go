@@ -6,6 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/samber/lo"
+	"github.com/sourcegraph/conc/iter"
 )
 
 type HTTPClient struct {
@@ -60,18 +63,46 @@ func (c *HTTPClient) Call(ctx context.Context, endpoint string, msg *Message) (*
 	return &res, nil
 }
 
-func (c *HTTPClient) BatchCall(ctx context.Context, endpoint string, msgs []*Message) ([]*Message, error) {
-	var (
-		buf bytes.Buffer
-		res Payload
-		m   = make(map[string]int)
-	)
-
-	if len(msgs) == 0 {
+func (c *HTTPClient) BatchCall(ctx context.Context, endpoint string, reqs []*Message, optFuncs ...BatchOptionsFunc) ([]*Message, error) {
+	if len(reqs) == 0 {
 		return nil, nil
 	}
 
-	if err := json.NewEncoder(&buf).Encode(msgs); err != nil {
+	var opts = NewBatchOptions(optFuncs...)
+
+	if opts.chunkSize <= 0 || opts.chunkSize >= len(reqs) {
+		return c.batchCall(ctx, endpoint, reqs)
+	}
+
+	var (
+		mapper = iter.Mapper[[]*Message, []*Message]{
+			MaxGoroutines: opts.concurrencyLimit,
+		}
+		chunks = lo.Chunk(reqs, opts.chunkSize)
+	)
+
+	chunksRes, err := mapper.MapErr(chunks, func(reqs *[]*Message) ([]*Message, error) {
+		return c.batchCall(ctx, endpoint, *reqs)
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return lo.Flatten(chunksRes), nil
+}
+
+func (c *HTTPClient) batchCall(ctx context.Context, endpoint string, reqs []*Message) ([]*Message, error) {
+	var (
+		buf bytes.Buffer
+		res Payload
+	)
+
+	if len(reqs) == 0 {
+		return nil, nil
+	}
+
+	if err := json.NewEncoder(&buf).Encode(reqs); err != nil {
 		return nil, err
 	}
 
@@ -84,12 +115,6 @@ func (c *HTTPClient) BatchCall(ctx context.Context, endpoint string, msgs []*Mes
 
 	if err != nil {
 		return nil, err
-	}
-
-	for i, msg := range msgs {
-		if len(msg.Id) > 0 {
-			m[msg.Id] = i
-		}
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -113,8 +138,8 @@ func (c *HTTPClient) BatchCall(ctx context.Context, endpoint string, msgs []*Mes
 		return nil, res.Message.Error
 	}
 
-	if len(msgs) != len(res.Messages) {
-		return nil, fmt.Errorf("sent %d request but received %d responses", len(msgs), len(res.Messages))
+	if len(reqs) != len(res.Messages) {
+		return nil, fmt.Errorf("sent %d request but received %d responses", len(reqs), len(res.Messages))
 	}
 
 	return res.Messages, nil

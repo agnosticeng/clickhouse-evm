@@ -7,7 +7,7 @@ with
                 [evm_hex_encode_uint256(number)], 
                 ''
             ) as res
-        from numbers(20000000, 10)
+        from numbers(20000000, 1)
     ),
 
     q1 as (
@@ -61,6 +61,19 @@ with
         from q2
         where length(log_topics) == 3
         and log_topics[1] = evm_hex_encode(keccak256('Transfer(address,address,uint256)'))
+    ),
+
+    q4 as (
+        select 
+            block_number,
+            transaction_hash,
+            log_index,
+            contract_address as token,
+            evm_hex_encode(JSON_VALUE(evt, '$.inputs.arg0')) as sender,
+            evm_hex_encode(JSON_VALUE(evt, '$.inputs.arg1')) as recipient,
+            JSON_VALUE(evt, '$.inputs.arg2') as amount
+        from q3
     )
 
-select * from q3
+
+select * from q4

@@ -18,12 +18,15 @@ func Command() *cli.Command {
 		Name: "ethereum-rpc",
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "endpoint"},
+			&cli.IntFlag{Name: "batch-max-size", Value: 200},
+			&cli.IntFlag{Name: "batch-concurrency-limit", Value: 5},
 		},
 		Action: func(ctx *cli.Context) error {
 			var (
 				defaultEndpoint = ctx.String("endpoint")
 				// logger          = slogctx.FromCtx(ctx.Context)
-				buf proto.Buffer
+				batchOpts []jsonrpc.BatchOptionsFunc
+				buf       proto.Buffer
 
 				inputEndpointCol = new(proto.ColStr)
 				inputMethodCol   = new(proto.ColStr)
@@ -40,6 +43,9 @@ func Command() *cli.Command {
 					{Name: "result", Data: outputResultCol},
 				}
 			)
+
+			batchOpts = append(batchOpts, jsonrpc.WithChunkSize(ctx.Int("batch-max-size")))
+			batchOpts = append(batchOpts, jsonrpc.WithConcurrencyLimit(ctx.Int("atch-concurrency-limit")))
 
 			client, err := jsonrpc.NewHTTPClient(ctx.Context)
 
@@ -101,7 +107,7 @@ func Command() *cli.Command {
 					endpoint = defaultEndpoint
 				}
 
-				responses, err := client.BatchCall(ctx.Context, endpoint, requests)
+				responses, err := client.BatchCall(ctx.Context, endpoint, requests, batchOpts...)
 
 				if err != nil {
 					return err

@@ -6,8 +6,8 @@ with
             tx.from as from,
             trace.trace_address as trace_address,
             evm_decode_call(
-                coalesce(trace.action.input, ''),
-                coalesce(trace.result.output, ''),
+                trace.action.input::String,
+                trace.result.output::String,
                 'transfer(address,uint256)(bool)'
             ) as call
         from file('./tmp/evm_blocks/*.parquet')
@@ -28,4 +28,3 @@ with
     )
 
 select * from q1 limit 10;
-

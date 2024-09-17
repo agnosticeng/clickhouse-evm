@@ -6,9 +6,9 @@ with
             log.log_index as log_index,
             log.address as contract_address,
             evm_decode_event(
-                arrayMap(x -> coalesce(x, ''), log.topics),
-                coalesce(log.data, ''),
-                'file://./examples/abis/erc20.json'
+                log.topics::Array(String),
+                log.data::String,
+                'Transfer(indexed address, indexed address, uint256)'
             ) as evt
         from file('./tmp/evm_blocks/*.parquet')
         array join transactions as tx 
@@ -23,9 +23,9 @@ with
             evm_hex_encode(tx_hash) as tx_hash,
             log_index,
             evm_hex_encode(contract_address) as token,
-            evm_hex_encode(JSON_VALUE(evt, '$.inputs.from')) as sender,
-            evm_hex_encode(JSON_VALUE(evt, '$.inputs.to')) as recipient,
-            JSON_VALUE(evt, '$.inputs.value') as amount
+            evm_hex_encode(JSON_VALUE(evt, '$.inputs.arg0')) as sender,
+            evm_hex_encode(JSON_VALUE(evt, '$.inputs.arg1')) as recipient,
+            JSON_VALUE(evt, '$.inputs.arg2') as amount
         from q0
     )
 

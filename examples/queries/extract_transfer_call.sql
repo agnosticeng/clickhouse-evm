@@ -1,8 +1,8 @@
 with
     q0 as (
         select 
-            coalesce(trace.action.input, '') as input,
-            coalesce(trace.result.output, '') as output,
+            trace.action.input::String as input,
+            trace.result.output::String as output,
             'transfer(address,uint256)(bool)' as abi
         from file('./tmp/evm_blocks/*.parquet')
         array join transactions as tx 

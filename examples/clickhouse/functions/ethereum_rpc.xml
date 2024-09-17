@@ -1,0 +1,22 @@
+<functions>
+    <function>
+        <type>executable_pool</type>
+        <pool_size>1</pool_size>
+        <name>ethereum_rpc</name>
+        <argument>
+            <name>method</name>
+            <type>String</type>
+        </argument>
+        <argument>
+            <name>params</name>
+            <type>Array(String)</type>
+        </argument>
+        <argument>
+            <name>endpoint</name>
+            <type>String</type>
+        </argument>
+        <return_type>String</return_type>
+        <format>Native</format>
+        <command>agnostic-clickhouse-udf --log.path=tmp/udf.log function ethereum-rpc --endpoint=https://nood-beta.eu-02.flubeer.xyz/ethereum/mainnet?token=eyJhbGciOiJFUzI1NiIsImtpZCI6InBfQ3hFZnBzODNrV3FlMnZUM2ZJU3Q5MmxjcS1odmJuTEIxampsV0w4elUiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJpc3RpbyIsImV4cCI6MTczNTY4NjAwMCwiaWF0IjoxNzA0MjkxMzUwLCJpc3MiOiJub29kQGFnbm9zdGljLWluZnJhIiwianRpIjoiZDU2OWFlNzgxYWIxNTU2YzAxOGU3NDBmODU1NTE5NGVjYjNlYzlhYjMyMTRiMzE0MDBlYzJkNzlhOWUyYWQ5NCIsIm5iZiI6MTcwNDI5MTM1MCwic3ViIjoibm9vZCJ9.2A-UrtIyslQZgIQ8F6P6fDjrAqXYC1ppb5BsQXG7cC9Wv2HM8y5ZBqfZTgOs97Zio9dwBPszxJOqF3VlvjlwPQ</command>
+    </function>
+</functions>

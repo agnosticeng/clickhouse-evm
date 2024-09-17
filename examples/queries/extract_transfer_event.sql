@@ -1,8 +1,8 @@
 with
     q0 as (
         select 
-            arrayMap(x -> coalesce(x, ''), log.topics) as topics,
-            coalesce(log.data, '') as data,
+            log.topics::Array(String),
+            log.data::String,
             'Transfer(indexed address, indexed address, uint256)' as abi
         from file('./tmp/evm_blocks/*.parquet')
         array join transactions as tx 

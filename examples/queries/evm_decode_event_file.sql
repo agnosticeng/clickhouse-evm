@@ -6,9 +6,9 @@ with
             log.log_index as log_index,
             log.address as contract_address,
             evm_decode_event(
-                arrayMap(x -> coalesce(x, ''), log.topics),
-                coalesce(log.data, ''),
-                'https://pub-3dc78ef6a1e64bd19e34dabe14d14845.r2.dev/erc20_transfer.json'
+                log.topics::Array(String),
+                log.data::String,
+                'file://./examples/abis/erc20.json'
             ) as evt
         from file('./tmp/evm_blocks/*.parquet')
         array join transactions as tx 

@@ -1,1 +1,1 @@
-CREATE FUNCTION evm_hex_decode AS s -> unhex(substring(s, 3))
+CREATE OR REPLACE FUNCTION evm_hex_decode AS (s) -> unhex(substring(s, 3));

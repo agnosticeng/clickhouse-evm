@@ -1,5 +1,5 @@
 <clickhouse>
-    <user_defined_executable_functions_config>functions/*.xml</user_defined_executable_functions_config>
+    <user_defined_executable_functions_config>user_defined/*.xml</user_defined_executable_functions_config>
     <user_scripts_path>./bin</user_scripts_path>
-    <user_defined_path>/Users/arnaudbriche/Desktop/agnostic/agnostic-clickhouse-udf/examples/clickhouse/user_defined/</user_defined_path>
+    <user_defined_path>examples/clickhouse/user_defined/</user_defined_path>
 </clickhouse>

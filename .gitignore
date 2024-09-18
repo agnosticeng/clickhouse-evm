@@ -2,3 +2,6 @@ bin
 tmp
 *.bin
 .DS_Store
+venv
+*.pyc
+agnostic-clickhouse-udf

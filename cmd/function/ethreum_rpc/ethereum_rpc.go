@@ -17,16 +17,26 @@ func Command() *cli.Command {
 	return &cli.Command{
 		Name: "ethereum-rpc",
 		Flags: []cli.Flag{
-			&cli.StringFlag{Name: "endpoint"},
-			&cli.IntFlag{Name: "batch-max-size", Value: 200},
-			&cli.IntFlag{Name: "batch-concurrency-limit", Value: 5},
+			&cli.StringFlag{
+				Name:    "endpoint",
+				EnvVars: []string{"ETHEREUM_RPC_ENDPOINT"},
+			},
+			&cli.IntFlag{
+				Name:    "batch-max-size",
+				Value:   200,
+				EnvVars: []string{"ETHEREUM_RPC_BATCH_MAX_SIZE"},
+			},
+			&cli.IntFlag{
+				Name:    "batch-concurrency-limit",
+				Value:   5,
+				EnvVars: []string{"ETHEREUM_RPC_BATCH_CONCURRENCY_LIMIT"},
+			},
 		},
 		Action: func(ctx *cli.Context) error {
 			var (
 				defaultEndpoint = ctx.String("endpoint")
-				// logger          = slogctx.FromCtx(ctx.Context)
-				batchOpts []jsonrpc.BatchOptionsFunc
-				buf       proto.Buffer
+				batchOpts       []jsonrpc.BatchOptionsFunc
+				buf             proto.Buffer
 
 				inputEndpointCol = new(proto.ColStr)
 				inputMethodCol   = new(proto.ColStr)

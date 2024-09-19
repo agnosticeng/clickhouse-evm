@@ -16,18 +16,25 @@ func main() {
 	app := cli.App{
 		Name: "agnostic-clickhouse-udf",
 		Flags: []cli.Flag{
-			&cli.IntFlag{Name: "log.level", Value: 0},
-			&cli.StringFlag{Name: "log.path"},
+			&cli.IntFlag{
+				Name:    "log-level",
+				Value:   0,
+				EnvVars: []string{"LOG_LEVEL"},
+			},
+			&cli.StringFlag{
+				Name:    "log-path",
+				EnvVars: []string{"LOG_PATH"},
+			},
 		},
 		Before: func(ctx *cli.Context) error {
 			var (
-				path = ctx.String("log.path")
+				path = ctx.String("log-path")
 				w    io.WriteCloser
 				err  error
 				lvl  slog.LevelVar
 			)
 
-			lvl.Set(slog.Level(ctx.Int("log.level")))
+			lvl.Set(slog.Level(ctx.Int("log-level")))
 
 			if len(path) == 0 {
 				w = os.Stderr

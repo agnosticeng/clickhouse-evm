@@ -17,7 +17,10 @@ func Command() *cli.Command {
 	return &cli.Command{
 		Name: "evm-decode-event",
 		Flags: []cli.Flag{
-			&cli.StringFlag{Name: "abi-provider"},
+			&cli.StringFlag{
+				Name:    "abi-provider",
+				EnvVars: []string{"EVM_DECODE_EVENT_ABI_PROVIDER"},
+			},
 		},
 		Action: func(ctx *cli.Context) error {
 			var cache = memo.KeyedErr[string, abi_provider.ABIProvider](

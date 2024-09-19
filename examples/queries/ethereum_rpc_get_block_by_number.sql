@@ -12,5 +12,5 @@ with
 
 select 
     number,
-    JSON_VALUE(res, '$.hash') as hash
+    JSONExtract(res, 'Tuple(hash String)').1
 from q0

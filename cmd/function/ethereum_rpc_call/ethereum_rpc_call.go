@@ -28,14 +28,19 @@ func Command() *cli.Command {
 				EnvVars: []string{"ETHEREUM_RPC_ENDPOINT"},
 			},
 			&cli.IntFlag{
-				Name:    "batch-max-size",
+				Name:    "max-batch-size",
 				Value:   200,
-				EnvVars: []string{"ETHEREUM_RPC_BATCH_MAX_SIZE"},
+				EnvVars: []string{"ETHEREUM_RPC_MAX_BATCH_SIZE"},
 			},
 			&cli.IntFlag{
-				Name:    "batch-concurrency-limit",
+				Name:    "max-concurrent-requests",
 				Value:   5,
-				EnvVars: []string{"ETHEREUM_RPC_BATCH_CONCURRENCY_LIMIT"},
+				EnvVars: []string{"ETHEREUM_RPC_MAX_CONCURRENT_REQUESTS"},
+			},
+			&cli.BoolFlag{
+				Name:    "disable-batch",
+				Value:   false,
+				EnvVars: []string{"ETHEREUM_RPC_DISABLE_BATCH"},
 			},
 			&cli.StringFlag{
 				Name:    "abi-provider",
@@ -57,7 +62,7 @@ func Command() *cli.Command {
 
 			var (
 				defaultEndpoint = ctx.String("endpoint")
-				batchOpts       []jsonrpc.BatchOptionsFunc
+				callOpts        []jsonrpc.CallOptionsFunc
 				buf             proto.Buffer
 
 				inputToCol          = new(proto.ColStr)
@@ -80,8 +85,9 @@ func Command() *cli.Command {
 				}
 			)
 
-			batchOpts = append(batchOpts, jsonrpc.WithChunkSize(ctx.Int("batch-max-size")))
-			batchOpts = append(batchOpts, jsonrpc.WithConcurrencyLimit(ctx.Int("atch-concurrency-limit")))
+			callOpts = append(callOpts, jsonrpc.WithDisableBatch(ctx.Bool("disable-batch")))
+			callOpts = append(callOpts, jsonrpc.WithMatchBatchSize(ctx.Int("max-batch-size")))
+			callOpts = append(callOpts, jsonrpc.WithMaxConcurrentRequests(ctx.Int("max-concurrent-requests")))
 
 			client, err := jsonrpc.NewHTTPClient(ctx.Context)
 
@@ -164,7 +170,7 @@ func Command() *cli.Command {
 							Data: string(hexutil.Encode(inputData)),
 						},
 						BlockNumberToString(blockNumber),
-						nil,
+						map[string]interface{}{},
 					})
 
 					if err != nil {
@@ -178,7 +184,7 @@ func Command() *cli.Command {
 					endpoint = defaultEndpoint
 				}
 
-				responses, err := client.BatchCall(ctx.Context, endpoint, requests, batchOpts...)
+				responses, err := client.BatchCall(ctx.Context, endpoint, requests, callOpts...)
 
 				if err != nil {
 					return err

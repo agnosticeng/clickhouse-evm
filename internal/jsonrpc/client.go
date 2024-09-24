@@ -5,10 +5,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/samber/lo"
 	"github.com/sourcegraph/conc/iter"
+	slogctx "github.com/veqryn/slog-context"
 )
 
 type HTTPClient struct {
@@ -20,47 +22,6 @@ func NewHTTPClient(ctx context.Context) (*HTTPClient, error) {
 	return &HTTPClient{
 		client: client,
 	}, nil
-}
-
-func (c *HTTPClient) Call(ctx context.Context, endpoint string, msg *Message) (*Message, error) {
-	var (
-		buf bytes.Buffer
-		res Message
-	)
-
-	if err := json.NewEncoder(&buf).Encode(msg); err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequestWithContext(
-		ctx,
-		"POST",
-		endpoint,
-		&buf,
-	)
-
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Set("Content-Type", "application/json")
-	resp, err := c.client.Do(req)
-
-	if err != nil {
-		return nil, err
-	}
-
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("bad status code: %d", resp.StatusCode)
-	}
-
-	if err := json.NewDecoder(resp.Body).Decode(&res); err != nil {
-		return nil, err
-	}
-
-	return &res, nil
 }
 
 func (c *HTTPClient) BatchCall(ctx context.Context, endpoint string, reqs []*Message, optFuncs ...BatchOptionsFunc) ([]*Message, error) {
@@ -94,8 +55,9 @@ func (c *HTTPClient) BatchCall(ctx context.Context, endpoint string, reqs []*Mes
 
 func (c *HTTPClient) batchCall(ctx context.Context, endpoint string, reqs []*Message) ([]*Message, error) {
 	var (
-		buf bytes.Buffer
-		res Payload
+		buf    bytes.Buffer
+		res    Payload
+		logger = slogctx.FromCtx(ctx)
 	)
 
 	if len(reqs) == 0 {
@@ -104,6 +66,10 @@ func (c *HTTPClient) batchCall(ctx context.Context, endpoint string, reqs []*Mes
 
 	if err := json.NewEncoder(&buf).Encode(reqs); err != nil {
 		return nil, err
+	}
+
+	if logger.Enabled(ctx, slog.LevelDebug) {
+		logger.Debug("JSON-RPC request", "content", buf.String())
 	}
 
 	req, err := http.NewRequestWithContext(
@@ -132,6 +98,11 @@ func (c *HTTPClient) batchCall(ctx context.Context, endpoint string, reqs []*Mes
 
 	if err := json.NewDecoder(resp.Body).Decode(&res); err != nil {
 		return nil, err
+	}
+
+	if logger.Enabled(ctx, slog.Level(-10)) {
+		var js, _ = json.Marshal(res)
+		logger.Log(ctx, slog.Level(-10), "JSON-RPC response", "content", js)
 	}
 
 	if len(res.Messages) == 0 && res.Message != nil {

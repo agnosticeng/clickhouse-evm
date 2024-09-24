@@ -4,9 +4,9 @@ go 1.23.1
 
 require (
 	github.com/ClickHouse/ch-go v0.62.0
-	github.com/agnosticeng/evmabi v0.1.0
+	github.com/agnosticeng/evmabi v0.1.1
 	github.com/agnosticeng/panicsafe v0.5.0
-	github.com/ethereum/go-ethereum v1.14.8
+	github.com/ethereum/go-ethereum v1.14.9
 	github.com/samber/lo v1.47.0
 	github.com/sourcegraph/conc v0.3.0
 	github.com/urfave/cli/v2 v2.27.4

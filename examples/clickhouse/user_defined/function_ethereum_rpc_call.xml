@@ -1,0 +1,30 @@
+<functions>
+    <function>
+        <type>executable_pool</type>
+        <pool_size>1</pool_size>
+        <name>ethereum_rpc_call</name>
+        <argument>
+            <name>to</name>
+            <type>String</type>
+        </argument>
+        <argument>
+            <name>fullsig</name>
+            <type>String</type>
+        </argument>
+        <argument>
+            <name>data</name>
+            <type>String</type>
+        </argument>
+        <argument>
+            <name>block_number</name>
+            <type>Int64</type>
+        </argument>
+        <argument>
+            <name>endpoint</name>
+            <type>String</type>
+        </argument>
+        <return_type>String</return_type>
+        <format>Native</format>
+        <command>agnostic-clickhouse-udf function ethereum-rpc-call</command>
+    </function>
+</functions>

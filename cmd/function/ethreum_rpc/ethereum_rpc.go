@@ -97,9 +97,9 @@ func Command() *cli.Command {
 					if edp := inputEndpointCol.Row(i); edp != endpoint {
 						if len(endpoint) == 0 {
 							endpoint = edp
+						} else {
+							return fmt.Errorf("endpoint must be constant for the whole input block")
 						}
-
-						return fmt.Errorf("endpoint must be constant for the whole input block")
 					}
 
 					js, err := json.Marshal(jparams)

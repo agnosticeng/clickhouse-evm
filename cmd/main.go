@@ -46,11 +46,12 @@ func main() {
 				return err
 			}
 
-			slog.NewTextHandler(w, &slog.HandlerOptions{AddSource: true, Level: &lvl})
-
 			var (
-				handler = slogctx.NewHandler(slog.NewTextHandler(w, nil), nil)
-				logger  = slog.New(handler)
+				handler = slogctx.NewHandler(
+					slog.NewTextHandler(w, &slog.HandlerOptions{AddSource: true, Level: &lvl}),
+					nil,
+				)
+				logger = slog.New(handler)
 			)
 
 			slog.SetDefault(logger)

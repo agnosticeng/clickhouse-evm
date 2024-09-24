@@ -1,6 +1,7 @@
 package function
 
 import (
+	"github.com/agnosticeng/agnostic-clickhouse-udf/cmd/function/ethereum_rpc_call"
 	ethereum_rpc "github.com/agnosticeng/agnostic-clickhouse-udf/cmd/function/ethreum_rpc"
 	"github.com/agnosticeng/agnostic-clickhouse-udf/cmd/function/evm_decode_call"
 	"github.com/agnosticeng/agnostic-clickhouse-udf/cmd/function/evm_decode_event"
@@ -16,6 +17,7 @@ func Command() *cli.Command {
 			evm_decode_event.Command(),
 			evm_decode_call.Command(),
 			ethereum_rpc.Command(),
+			ethereum_rpc_call.Command(),
 		},
 	}
 }

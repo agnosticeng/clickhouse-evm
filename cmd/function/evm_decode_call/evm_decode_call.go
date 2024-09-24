@@ -19,7 +19,7 @@ func Command() *cli.Command {
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    "abi-provider",
-				EnvVars: []string{"EVM_DECODE_CALL_ABI_PROVIDER"},
+				EnvVars: []string{"EVM_ABI_PROVIDER"},
 			},
 		},
 		Action: func(ctx *cli.Context) error {

@@ -1,7 +1,7 @@
 github.com/ClickHouse/ch-go v0.62.0 h1:eXH0hytXeCEEZHgMvOX9IiW7wqBb4w1MJMp9rArbkrc=
 github.com/ClickHouse/ch-go v0.62.0/go.mod h1:uzso52/PD9+gZj7tL6XAo8/EYDrx7CIwNF4c6PnO6S0=
-github.com/agnosticeng/evmabi v0.1.0 h1:LOUOTDCSWMn+AnWgPcOSuq33nNIdhnG0KnHvAWm9O6Y=
-github.com/agnosticeng/evmabi v0.1.0/go.mod h1:79bKiAz0ga7DYPvbruwhxXXgjP8jwIQyeTqtGrTxUgc=
+github.com/agnosticeng/evmabi v0.1.1 h1:qBW5Uyt5ex3S/o0hnCR8C0yzHez936pSQXpGFj90xJI=
+github.com/agnosticeng/evmabi v0.1.1/go.mod h1:79bKiAz0ga7DYPvbruwhxXXgjP8jwIQyeTqtGrTxUgc=
 github.com/agnosticeng/panicsafe v0.5.0 h1:rStbOzyOQ4I0fSXElcq1zX81XyxHvQQoNxD0XZl/6/k=
 github.com/agnosticeng/panicsafe v0.5.0/go.mod h1:dXWabTdUv+kz5D/Uj+SHc3C6H6O/XpnLStkrRalYxZk=
 github.com/bool64/shared v0.1.5 h1:fp3eUhBsrSjNCQPcSdQqZxxh9bBwrYiZ+zOKFkM0/2E=
@@ -28,8 +28,8 @@ github.com/decred/dcrd/crypto/blake256 v1.0.1 h1:7PltbUIQB7u/FfZ39+DGa/ShuMyJ5il
 github.com/decred/dcrd/crypto/blake256 v1.0.1/go.mod h1:2OfgNZ5wDpcsFmHmCK5gZTPcCXqlm2ArzUIkw9czNJo=
 github.com/decred/dcrd/dcrec/secp256k1/v4 v4.3.0 h1:rpfIENRNNilwHwZeG5+P150SMrnNEcHYvcCuK6dPZSg=
 github.com/decred/dcrd/dcrec/secp256k1/v4 v4.3.0/go.mod h1:v57UDF4pDQJcEfFUCRop3lJL149eHGSe9Jvczhzjo/0=
-github.com/ethereum/go-ethereum v1.14.8 h1:NgOWvXS+lauK+zFukEvi85UmmsS/OkV0N23UZ1VTIig=
-github.com/ethereum/go-ethereum v1.14.8/go.mod h1:TJhyuDq0JDppAkFXgqjwpdlQApywnu/m10kFPxh8vvs=
+github.com/ethereum/go-ethereum v1.14.9 h1:J7iwXDrtUyE9FUjUYbd4c9tyzwMh6dTJsKzo9i6SrwA=
+github.com/ethereum/go-ethereum v1.14.9/go.mod h1:QeW+MtTpRdBEm2pUFoonByee8zfHv7kGp0wK0odvU1I=
 github.com/go-faster/city v1.0.1 h1:4WAxSZ3V2Ws4QRDrscLEDcibJY8uf41H6AhXDrNDcGw=
 github.com/go-faster/city v1.0.1/go.mod h1:jKcUJId49qdW3L1qKHH/3wPeUstCVpVSXTM6vO3VcTw=
 github.com/go-faster/errors v0.7.1 h1:MkJTnDoEdi9pDabt1dpWf7AA8/BaSYZqibYyhZ20AYg=

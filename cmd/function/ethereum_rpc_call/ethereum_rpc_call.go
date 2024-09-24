@@ -266,7 +266,7 @@ func decodeResult(
 		return Result{Error: err.Error()}
 	}
 
-	return Result{Data: data}
+	return Result{Value: data}
 }
 
 func prepareParams(meth *abi.Method, values []interface{}) ([]interface{}, error) {

@@ -15,7 +15,7 @@ type TransactionObject struct {
 
 type Result struct {
 	Error string          `json:"error,omitempty"`
-	Data  json.RawMessage `json:"data,omitempty"`
+	Value json.RawMessage `json:"value,omitempty"`
 }
 
 func BlockNumberToString(n int64) string {

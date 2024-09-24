@@ -47,12 +47,12 @@ with
             q2.*,
             JSONExtractString(
                 ethereum_rpc_call(q2.contract_address, 'symbol()(string)', '', -1::Int64, ''),
-                'data',
+                'value',
                 'arg0'
             ) as symbol,
             JSONExtractUInt(
                 ethereum_rpc_call(q2.contract_address, 'decimals()(uint8)', '', -1::Int64, ''),
-                'data',
+                'value',
                 'arg0'
             ) as decimals
         from q2

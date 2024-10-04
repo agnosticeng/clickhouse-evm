@@ -1,1 +1,0 @@
-CREATE OR REPLACE FUNCTION evm_hex_encode_uint256 AS (i) -> concatAssumeInjective('0x', trim(LEADING '0' FROM lower(hex(i))));

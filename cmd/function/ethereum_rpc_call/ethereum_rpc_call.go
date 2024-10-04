@@ -10,43 +10,30 @@ import (
 
 	"github.com/ClickHouse/ch-go/proto"
 	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/jsonrpc"
+	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/jsonrpc_cli"
 	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/memo"
 	"github.com/agnosticeng/evmabi/fullsig"
 	evmabi_json "github.com/agnosticeng/evmabi/json"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/samber/lo"
 	"github.com/urfave/cli/v2"
 )
 
+func Flags() []cli.Flag {
+	return []cli.Flag{
+		&cli.StringFlag{
+			Name:    "abi-provider",
+			EnvVars: []string{"EVM_ABI_PROVIDER"},
+		},
+	}
+}
+
 func Command() *cli.Command {
 	return &cli.Command{
-		Name: "ethereum-rpc-call",
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:    "endpoint",
-				EnvVars: []string{"ETHEREUM_RPC_ENDPOINT"},
-			},
-			&cli.IntFlag{
-				Name:    "max-batch-size",
-				Value:   200,
-				EnvVars: []string{"ETHEREUM_RPC_MAX_BATCH_SIZE"},
-			},
-			&cli.IntFlag{
-				Name:    "max-concurrent-requests",
-				Value:   5,
-				EnvVars: []string{"ETHEREUM_RPC_MAX_CONCURRENT_REQUESTS"},
-			},
-			&cli.BoolFlag{
-				Name:    "disable-batch",
-				Value:   false,
-				EnvVars: []string{"ETHEREUM_RPC_DISABLE_BATCH"},
-			},
-			&cli.StringFlag{
-				Name:    "abi-provider",
-				EnvVars: []string{"EVM_ABI_PROVIDER"},
-			},
-		},
+		Name:  "ethereum-rpc-call",
+		Flags: lo.Flatten([][]cli.Flag{jsonrpc_cli.Flags(), Flags()}),
 		Action: func(ctx *cli.Context) error {
 			var cache = memo.KeyedErr[string, *abi.Method](
 				func(key string) (*abi.Method, error) {
@@ -62,7 +49,7 @@ func Command() *cli.Command {
 
 			var (
 				defaultEndpoint = ctx.String("endpoint")
-				callOpts        []jsonrpc.CallOptionsFunc
+				callOpts        = jsonrpc_cli.CallOptionsFromContext(ctx)
 				buf             proto.Buffer
 
 				inputToCol          = new(proto.ColStr)
@@ -84,10 +71,6 @@ func Command() *cli.Command {
 					{Name: "result", Data: outputResultCol},
 				}
 			)
-
-			callOpts = append(callOpts, jsonrpc.WithDisableBatch(ctx.Bool("disable-batch")))
-			callOpts = append(callOpts, jsonrpc.WithMatchBatchSize(ctx.Int("max-batch-size")))
-			callOpts = append(callOpts, jsonrpc.WithMaxConcurrentRequests(ctx.Int("max-concurrent-requests")))
 
 			client, err := jsonrpc.NewHTTPClient(ctx.Context)
 

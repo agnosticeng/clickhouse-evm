@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  clickhouse-server:
+    image: clickhouse/clickhouse-server:24.9.1
+    restart: always
+    ports: 
+      - '9000:9000'
+    volumes:
+      - '${BUNDLE_PATH:-./tmp/bundle}/etc/clickhouse-server/ethereum_rpc_call_function.xml:/etc/clickhouse-server/ethereum_rpc_call_function.xml:ro'
+      - '${BUNDLE_PATH:-./tmp/bundle}/etc/clickhouse-server/ethereum_rpc_function.xml:/etc/clickhouse-server/ethereum_rpc_function.xml:ro'
+      - '${BUNDLE_PATH:-./tmp/bundle}/etc/clickhouse-server/evm_decode_call_function.xml:/etc/clickhouse-server/evm_decode_call_function.xml:ro'
+      - '${BUNDLE_PATH:-./tmp/bundle}/etc/clickhouse-server/evm_decode_event_function.xml:/etc/clickhouse-server/evm_decode_event_function.xml:ro'
+      - '${BUNDLE_PATH:-./tmp/bundle}/etc/clickhouse-server/keccak256_function.xml:/etc/clickhouse-server/keccak256_function.xml:ro'
+      - '${BUNDLE_PATH:-./tmp/bundle}/var/lib/clickhouse/user_defined/function_evm_hex_decode_int.sql:/var/lib/clickhouse/user_defined/function_evm_hex_decode_int.sql:ro'
+      - '${BUNDLE_PATH:-./tmp/bundle}/var/lib/clickhouse/user_defined/function_evm_hex_decode.sql:/var/lib/clickhouse/user_defined/function_evm_hex_decode.sql:ro'
+      - '${BUNDLE_PATH:-./tmp/bundle}/var/lib/clickhouse/user_defined/function_evm_hex_encode_int.sql:/var/lib/clickhouse/user_defined/function_evm_hex_encode_int.sql:ro'
+      - '${BUNDLE_PATH:-./tmp/bundle}/var/lib/clickhouse/user_defined/function_evm_hex_encode.sql:/var/lib/clickhouse/user_defined/function_evm_hex_encode.sql:ro'
+      - '${BUNDLE_PATH:-./tmp/bundle}/var/lib/clickhouse/user_scripts/agnostic-clickhouse-udf:/var/lib/clickhouse/user_scripts/agnostic-clickhouse-udf:ro'
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL}
+      - LOG_PATH=${LOG_PATH}
+      - ETHEREUM_RPC_ENDPOINT=${ETHEREUM_RPC_ENDPOINT}
+      - ETHEREUM_RPC_MAX_CONCURRENT_REQUESTS=10
+      - AWS_REGION=${AWS_REGION}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}

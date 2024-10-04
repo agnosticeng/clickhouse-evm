@@ -1,0 +1,1 @@
+CREATE OR REPLACE FUNCTION evm_hex_decode_int AS (s, itype) -> reinterpret(reverse(evm_hex_decode(trim(BOTH '"' FROM s))), itype);

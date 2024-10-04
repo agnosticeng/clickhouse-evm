@@ -24,11 +24,23 @@ type Message struct {
 	Error  *ResponseError  `json:"error,omitempty"`
 }
 
+func MustMarshalJSON(i interface{}) []byte {
+	js, _ := json.Marshal(i)
+	return js
+}
+
 func NewMessage() *Message {
 	return &Message{
 		Version: "2.0",
 		Id:      strconv.FormatUint(rng.Uint64(), 16),
 	}
+}
+
+func NewRequest(method string, params json.RawMessage) *Message {
+	var m = NewMessage()
+	m.Method = method
+	m.Params = params
+	return m
 }
 
 type ResponseError struct {

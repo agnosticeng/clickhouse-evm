@@ -46,7 +46,7 @@ func (c *HTTPClient) multiCall(ctx context.Context, endpoint string, reqs []*Mes
 	)
 
 	resps, err := mapper.MapErr(reqs, func(req **Message) (*Message, error) {
-		return c.doSingleCall(ctx, endpoint, *req)
+		return c.Call(ctx, endpoint, *req)
 	})
 
 	if err != nil {
@@ -142,7 +142,7 @@ func (c *HTTPClient) doBatchCall(ctx context.Context, endpoint string, reqs []*M
 	return res.Messages, nil
 }
 
-func (c *HTTPClient) doSingleCall(ctx context.Context, endpoint string, req *Message) (*Message, error) {
+func (c *HTTPClient) Call(ctx context.Context, endpoint string, req *Message) (*Message, error) {
 	var (
 		buf    bytes.Buffer
 		res    Message
@@ -181,9 +181,9 @@ func (c *HTTPClient) doSingleCall(ctx context.Context, endpoint string, req *Mes
 
 	defer httpResp.Body.Close()
 
-	// if httpResp.StatusCode != 200 {
-	// 	return nil, fmt.Errorf("bad status code: %d", httpResp.StatusCode)
-	// }
+	if httpResp.StatusCode != 200 {
+		return nil, fmt.Errorf("bad status code: %d", httpResp.StatusCode)
+	}
 
 	if err := json.NewDecoder(httpResp.Body).Decode(&res); err != nil {
 		return nil, err

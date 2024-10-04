@@ -2,64 +2,24 @@ package main
 
 import (
 	"fmt"
-	"io"
 	"log/slog"
 	"os"
 
 	"github.com/agnosticeng/agnostic-clickhouse-udf/cmd/function"
+	"github.com/agnosticeng/agnostic-clickhouse-udf/cmd/table_function"
 	"github.com/agnosticeng/panicsafe"
+	"github.com/agnosticeng/slogcli"
 	"github.com/urfave/cli/v2"
-	slogctx "github.com/veqryn/slog-context"
 )
 
 func main() {
 	app := cli.App{
-		Name: "agnostic-clickhouse-udf",
-		Flags: []cli.Flag{
-			&cli.IntFlag{
-				Name:    "log-level",
-				Value:   0,
-				EnvVars: []string{"LOG_LEVEL"},
-			},
-			&cli.StringFlag{
-				Name:    "log-path",
-				EnvVars: []string{"LOG_PATH"},
-			},
-		},
-		Before: func(ctx *cli.Context) error {
-			var (
-				path = ctx.String("log-path")
-				w    io.WriteCloser
-				err  error
-				lvl  slog.LevelVar
-			)
-
-			lvl.Set(slog.Level(ctx.Int("log-level")))
-
-			if len(path) == 0 {
-				w = os.Stderr
-			} else {
-				w, err = os.Create(path)
-			}
-
-			if err != nil {
-				return err
-			}
-
-			var (
-				handler = slogctx.NewHandler(
-					slog.NewTextHandler(w, &slog.HandlerOptions{AddSource: true, Level: &lvl}),
-					nil,
-				)
-				logger = slog.New(handler)
-			)
-
-			slog.SetDefault(logger)
-			ctx.Context = slogctx.NewCtx(ctx.Context, logger)
-			return nil
-		},
+		Name:   "agnostic-clickhouse-udf",
+		Flags:  slogcli.SlogFlags(),
+		Before: slogcli.SlogBefore,
 		Commands: []*cli.Command{
 			function.Command(),
+			table_function.Command(),
 		},
 	}
 

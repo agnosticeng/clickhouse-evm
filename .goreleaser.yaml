@@ -1,0 +1,41 @@
+version: 1
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    goamd64:
+      - v1
+      - v3
+    main: ./cmd
+    binary: /var/lib/clickhouse/user_scripts/agnostic-clickhouse-udf
+
+archives:
+  - format: tar.gz
+
+    name_template: "{{ .ProjectName }}_{{.Os}}_{{.Arch}}{{ with .Amd64 }}_{{ . }}{{ end }}"
+
+    files:
+      - src: "config/*.*ml"
+        dst: /etc/clickhouse-server/
+        strip_parent: true
+
+      - src: "sql/function_*.sql"
+        dst: var/lib/clickhouse/user_defined/
+        strip_parent: true
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"

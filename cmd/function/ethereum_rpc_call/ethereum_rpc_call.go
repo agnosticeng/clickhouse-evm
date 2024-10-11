@@ -17,23 +17,13 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/samber/lo"
 	"github.com/urfave/cli/v2"
 )
-
-func Flags() []cli.Flag {
-	return []cli.Flag{
-		&cli.StringFlag{
-			Name:    "abi-provider",
-			EnvVars: []string{"EVM_ABI_PROVIDER"},
-		},
-	}
-}
 
 func Command() *cli.Command {
 	return &cli.Command{
 		Name:  "ethereum-rpc-call",
-		Flags: lo.Flatten([][]cli.Flag{jsonrpc_cli.Flags(), Flags()}),
+		Flags: jsonrpc_cli.Flags(),
 		Action: func(ctx *cli.Context) error {
 			var cache = memo.KeyedErr[string, *abi.Method](
 				func(key string) (*abi.Method, error) {

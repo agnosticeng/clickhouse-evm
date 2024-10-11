@@ -8,7 +8,7 @@ with
             JSONExtract(
                 ethereum_rpc(
                     'eth_getBlockByNumber', 
-                    [evm_hex_encode_uint256(n), 'true'], 
+                    [evm_hex_encode_int(n), 'true'], 
                     ''
                 ),
                 'JSON'
@@ -16,7 +16,7 @@ with
             JSONExtract(
                 ethereum_rpc(
                     'eth_getBlockReceipts', 
-                    [evm_hex_encode_uint256(n)], 
+                    [evm_hex_encode_int(n)], 
                     ''
                 ),
                 'Array(JSON)'
@@ -63,4 +63,7 @@ with
     )
 
 select * from q2
+
+
+
 

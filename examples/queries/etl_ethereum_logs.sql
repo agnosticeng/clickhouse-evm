@@ -1,6 +1,6 @@
 with 
     q0 as (
-        select number as n from numbers(20764111, 1)
+        select number as n from numbers(20764111, 1000)
     ),
 
     q1 as (
@@ -43,7 +43,7 @@ with
         array join receipt.logs[] as log
     )
 
-select * from q2
+select count(*) from q2
 
 
 

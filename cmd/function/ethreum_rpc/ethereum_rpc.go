@@ -9,42 +9,19 @@ import (
 
 	"github.com/ClickHouse/ch-go/proto"
 	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/jsonrpc"
+	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/jsonrpc_cli"
 	"github.com/samber/lo"
 	"github.com/urfave/cli/v2"
 )
 
 func Command() *cli.Command {
 	return &cli.Command{
-		Name: "ethereum-rpc",
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:    "endpoint",
-				EnvVars: []string{"ETHEREUM_RPC_ENDPOINT"},
-			},
-			&cli.IntFlag{
-				Name:    "max-batch-size",
-				Value:   200,
-				EnvVars: []string{"ETHEREUM_RPC_MAX_BATCH_SIZE"},
-			},
-			&cli.IntFlag{
-				Name:    "max-concurrent-requests",
-				Value:   5,
-				EnvVars: []string{"ETHEREUM_RPC_MAX_CONCURRENT_REQUESTS"},
-			},
-			&cli.BoolFlag{
-				Name:    "disable-batch",
-				Value:   false,
-				EnvVars: []string{"ETHEREUM_RPC_DISABLE_BATCH"},
-			},
-			&cli.StringFlag{
-				Name:    "abi-provider",
-				EnvVars: []string{"EVM_ABI_PROVIDER"},
-			},
-		},
+		Name:  "ethereum-rpc",
+		Flags: jsonrpc_cli.Flags(),
 		Action: func(ctx *cli.Context) error {
 			var (
 				defaultEndpoint = ctx.String("endpoint")
-				callOpts        []jsonrpc.CallOptionsFunc
+				callOpts        = jsonrpc_cli.CallOptionsFromContext(ctx)
 				buf             proto.Buffer
 
 				inputEndpointCol = new(proto.ColStr)
@@ -62,10 +39,6 @@ func Command() *cli.Command {
 					{Name: "result", Data: outputResultCol},
 				}
 			)
-
-			callOpts = append(callOpts, jsonrpc.WithDisableBatch(ctx.Bool("disable-batch")))
-			callOpts = append(callOpts, jsonrpc.WithMatchBatchSize(ctx.Int("max-batch-size")))
-			callOpts = append(callOpts, jsonrpc.WithMaxConcurrentRequests(ctx.Int("max-concurrent-requests")))
 
 			client, err := jsonrpc.NewHTTPClient(ctx.Context)
 
@@ -133,13 +106,11 @@ func Command() *cli.Command {
 					return err
 				}
 
-				for _, response := range responses {
-					if response.Error != nil {
-						return response.Error
-					}
-				}
-
 				for i := 0; i < input.Rows(); i++ {
+					if resp := responses[i]; resp.Error != nil {
+						return resp.Error
+					}
+
 					outputResultCol.Append(responses[i].Result)
 				}
 
@@ -152,7 +123,7 @@ func Command() *cli.Command {
 					return err
 				}
 
-				if _, err := io.Copy(os.Stdout, buf.Reader()); err != nil {
+				if _, err := os.Stdout.Write(buf.Buf); err != nil {
 					return err
 				}
 

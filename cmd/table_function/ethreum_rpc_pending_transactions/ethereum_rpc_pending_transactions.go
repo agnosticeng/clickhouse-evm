@@ -47,19 +47,19 @@ func Command() *cli.Command {
 				pollInterval = time.Second
 			}
 
-			resp, err := client.Call(
-				ctx.Context,
-				endpoint,
-				jsonrpc.NewRequest("eth_newPendingTransactionFilter", nil),
-			)
+			var msg = jsonrpc.NewRequest("eth_newPendingTransactionFilter", nil)
 
-			if err != nil {
+			if err := client.Call(ctx.Context, endpoint, msg); err != nil {
+				return err
+			}
+
+			if msg.Error != nil {
 				return err
 			}
 
 			var filterId string
 
-			if err := json.Unmarshal(resp.Result, &filterId); err != nil {
+			if err := json.Unmarshal(msg.Result, &filterId); err != nil {
 				return err
 			}
 
@@ -68,31 +68,27 @@ func Command() *cli.Command {
 				endpoint,
 				jsonrpc.NewRequest(
 					"eth_uninstallFilter",
-					jsonrpc.MustMarshalJSON([]interface{}{filterId}),
+					lo.Must(json.Marshal([]interface{}{filterId})),
 				),
 			)
 
 			for {
-				resp, err := client.Call(
-					ctx.Context,
-					endpoint,
-					jsonrpc.NewRequest(
-						"eth_getFilterChanges",
-						jsonrpc.MustMarshalJSON([]interface{}{filterId}),
-					),
+				msg := jsonrpc.NewRequest(
+					"eth_getFilterChanges",
+					lo.Must(json.Marshal([]interface{}{filterId})),
 				)
 
-				if err != nil {
+				if err := client.Call(ctx.Context, endpoint, msg); err != nil {
 					return err
 				}
 
-				if resp.Error != nil {
-					return resp.Error
+				if msg.Error != nil {
+					return msg.Error
 				}
 
 				var rows []json.RawMessage
 
-				if err := json.Unmarshal(resp.Result, &rows); err != nil {
+				if err := json.Unmarshal(msg.Result, &rows); err != nil {
 					return err
 				}
 

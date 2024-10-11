@@ -87,7 +87,7 @@ func Command() *cli.Command {
 				}
 
 				var (
-					requests = make([]*jsonrpc.Message, input.Rows())
+					batch    = make(jsonrpc.Batch, input.Rows())
 					endpoint string
 				)
 
@@ -97,7 +97,6 @@ func Command() *cli.Command {
 						_fullsig    = inputFullSigCol.Row(i)
 						data        = inputDataCol.Row(i)
 						blockNumber = inputBlockNumberCol.Row(i)
-						req         = jsonrpc.NewMessage()
 						inputs      []interface{}
 					)
 
@@ -136,8 +135,7 @@ func Command() *cli.Command {
 						inputData = append(inputData, d...)
 					}
 
-					req.Method = "eth_call"
-					req.Params, err = json.Marshal([]interface{}{
+					params, err := json.Marshal([]interface{}{
 						TransactionObject{
 							To:   to,
 							Data: string(hexutil.Encode(inputData)),
@@ -150,21 +148,19 @@ func Command() *cli.Command {
 						return err
 					}
 
-					requests[i] = req
+					batch[i].SetRequest("eth_call", params)
 				}
 
 				if len(endpoint) == 0 {
 					endpoint = defaultEndpoint
 				}
 
-				responses, err := client.BatchCall(ctx.Context, endpoint, requests, callOpts...)
-
-				if err != nil {
+				if err := client.BatchCall(ctx.Context, endpoint, batch, callOpts...); err != nil {
 					return err
 				}
 
-				for i, response := range responses {
-					var res = decodeResult(cache, inputFullSigCol.Row(i), response)
+				for i := 0; i < input.Rows(); i++ {
+					var res = decodeResult(cache, inputFullSigCol.Row(i), &batch[i])
 					js, err := json.Marshal(res)
 
 					if err != nil {
@@ -196,7 +192,6 @@ func Command() *cli.Command {
 					inputEndpointCol,
 					outputResultCol,
 				)
-
 			}
 		},
 	}

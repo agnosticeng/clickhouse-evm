@@ -65,7 +65,7 @@ func Command() *cli.Command {
 				}
 
 				var (
-					requests = make([]*jsonrpc.Message, input.Rows())
+					batch    = make(jsonrpc.Batch, input.Rows())
 					endpoint string
 				)
 
@@ -73,7 +73,6 @@ func Command() *cli.Command {
 					var (
 						method  = inputMethodCol.Row(i)
 						params  = inputParamsCol.Row(i)
-						req     = jsonrpc.NewMessage()
 						jparams = lo.Map(params, prepareParam)
 					)
 
@@ -91,27 +90,23 @@ func Command() *cli.Command {
 						return err
 					}
 
-					req.Method = method
-					req.Params = js
-					requests[i] = req
+					batch[i].SetRequest(method, js)
 				}
 
 				if len(endpoint) == 0 {
 					endpoint = defaultEndpoint
 				}
 
-				responses, err := client.BatchCall(ctx.Context, endpoint, requests, callOpts...)
-
-				if err != nil {
+				if err := client.BatchCall(ctx.Context, endpoint, batch, callOpts...); err != nil {
 					return err
 				}
 
 				for i := 0; i < input.Rows(); i++ {
-					if resp := responses[i]; resp.Error != nil {
+					if resp := batch[i]; resp.Error != nil {
 						return resp.Error
 					}
 
-					outputResultCol.Append(responses[i].Result)
+					outputResultCol.Append(batch[i].Result)
 				}
 
 				var outputblock = proto.Block{

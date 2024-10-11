@@ -24,23 +24,26 @@ type Message struct {
 	Error  *ResponseError  `json:"error,omitempty"`
 }
 
-func MustMarshalJSON(i interface{}) []byte {
-	js, _ := json.Marshal(i)
-	return js
+func (m *Message) SetRequest(method string, params json.RawMessage) {
+	m.Version = "2.0"
+	m.Id = strconv.FormatUint(rng.Uint64(), 16)
+	m.Method = method
+	m.Params = params
 }
 
-func NewMessage() *Message {
-	return &Message{
-		Version: "2.0",
-		Id:      strconv.FormatUint(rng.Uint64(), 16),
-	}
+func (m *Message) Clear() {
+	m.Version = ""
+	m.Id = ""
+	m.Method = ""
+	m.Params = nil
+	m.Result = nil
+	m.Error = nil
 }
 
 func NewRequest(method string, params json.RawMessage) *Message {
-	var m = NewMessage()
-	m.Method = method
-	m.Params = params
-	return m
+	var m Message
+	m.SetRequest(method, params)
+	return &m
 }
 
 type ResponseError struct {
@@ -53,45 +56,45 @@ func (err ResponseError) Error() string {
 	return err.Message
 }
 
-type Payload struct {
-	Message  *Message
-	Messages []*Message
+type Batch []Message
+
+func (b Batch) Clear() {
+	for i := 0; i < len(b); i++ {
+		(&b[i]).Clear()
+	}
 }
 
-func (p *Payload) UnmarshalJSON(input []byte) error {
+type MessageOrBatch struct {
+	Message *Message
+	Batch   Batch
+}
+
+func (mob *MessageOrBatch) UnmarshalJSON(input []byte) error {
 	switch {
 	case input[0] == '{':
-		var msg Message
-
-		if err := json.Unmarshal(input, &msg); err != nil {
+		if err := json.Unmarshal(input, &mob.Message); err != nil {
 			return err
 		}
-
-		p.Message = &msg
 
 	case input[0] == '[':
-		var msgs []*Message
-
-		if err := json.Unmarshal(input, &msgs); err != nil {
+		if err := json.Unmarshal(input, &mob.Batch); err != nil {
 			return err
 		}
 
-		p.Messages = msgs
-
 	default:
-		return fmt.Errorf("cannot recognize rpc request: %s", string(input))
+		return fmt.Errorf("neither a message nor a batch of messages: %s", string(input))
 	}
 
 	return nil
 }
 
-func (p Payload) MarshalJSON() ([]byte, error) {
+func (mob *MessageOrBatch) MarshalJSON() ([]byte, error) {
 	switch {
-	case p.Message != nil:
-		return json.Marshal(p.Message)
-	case len(p.Messages) > 0:
-		return json.Marshal(p.Messages)
+	case mob.Message != nil:
+		return json.Marshal(mob.Message)
+	case len(mob.Batch) > 0:
+		return json.Marshal(mob.Batch)
 	default:
-		return nil, fmt.Errorf("payload is neither a message nor a batch of messages")
+		return nil, fmt.Errorf("neither a message nor a batch of messages")
 	}
 }

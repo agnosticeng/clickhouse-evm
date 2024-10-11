@@ -9,7 +9,7 @@ import (
 	"net/http"
 
 	"github.com/samber/lo"
-	"github.com/sourcegraph/conc/iter"
+	"github.com/sourcegraph/conc/pool"
 	slogctx "github.com/veqryn/slog-context"
 )
 
@@ -24,177 +24,155 @@ func NewHTTPClient(ctx context.Context) (*HTTPClient, error) {
 	}, nil
 }
 
-func (c *HTTPClient) BatchCall(ctx context.Context, endpoint string, reqs []*Message, optFuncs ...CallOptionsFunc) ([]*Message, error) {
-	if len(reqs) == 0 {
-		return nil, nil
+func (c *HTTPClient) BatchCall(ctx context.Context, endpoint string, batch Batch, optFuncs ...CallOptionsFunc) error {
+	if len(batch) == 0 {
+		return nil
 	}
 
 	var opts = NewCallOptions(optFuncs...)
 
 	if opts.disableBatch {
-		return c.multiCall(ctx, endpoint, reqs, *opts)
+		return c.multiCall(ctx, endpoint, batch, *opts)
 	} else {
-		return c.batchCall(ctx, endpoint, reqs, *opts)
+		return c.batchCall(ctx, endpoint, batch, *opts)
 	}
 }
 
-func (c *HTTPClient) multiCall(ctx context.Context, endpoint string, reqs []*Message, opts CallOptions) ([]*Message, error) {
-	var (
-		mapper = iter.Mapper[*Message, *Message]{
-			MaxGoroutines: opts.maxConcurrentRequests,
-		}
-	)
+func (c *HTTPClient) multiCall(ctx context.Context, endpoint string, batch Batch, opts CallOptions) error {
+	var pool = pool.New().
+		WithContext(ctx).
+		WithCancelOnError().
+		WithFirstError().
+		WithMaxGoroutines(opts.maxConcurrentRequests)
 
-	resps, err := mapper.MapErr(reqs, func(req **Message) (*Message, error) {
-		return c.Call(ctx, endpoint, *req)
-	})
-
-	if err != nil {
-		return nil, err
+	for i := 0; i < len(batch); i++ {
+		pool.Go(func(ctx context.Context) error {
+			return c.Call(ctx, endpoint, &batch[i])
+		})
 	}
 
-	return resps, nil
+	return pool.Wait()
 }
 
-func (c *HTTPClient) batchCall(ctx context.Context, endpoint string, reqs []*Message, opts CallOptions) ([]*Message, error) {
-	if opts.maxBatchSize >= len(reqs) {
-		return c.doBatchCall(ctx, endpoint, reqs)
+func (c *HTTPClient) batchCall(ctx context.Context, endpoint string, batch Batch, opts CallOptions) error {
+	if opts.maxBatchSize >= len(batch) {
+		return c.doBatchCall(ctx, endpoint, batch)
 	}
 
-	var (
-		mapper = iter.Mapper[[]*Message, []*Message]{
-			MaxGoroutines: opts.maxConcurrentRequests,
-		}
-		chunks = lo.Chunk(reqs, opts.maxBatchSize)
-	)
+	var pool = pool.New().
+		WithContext(ctx).
+		WithCancelOnError().
+		WithFirstError().
+		WithMaxGoroutines(opts.maxConcurrentRequests)
 
-	chunksRes, err := mapper.MapErr(chunks, func(reqs *[]*Message) ([]*Message, error) {
-		return c.doBatchCall(ctx, endpoint, *reqs)
-	})
-
-	if err != nil {
-		return nil, err
+	for _, chunk := range lo.Chunk(batch, opts.maxBatchSize) {
+		pool.Go(func(ctx context.Context) error {
+			return c.doBatchCall(ctx, endpoint, chunk)
+		})
 	}
 
-	return lo.Flatten(chunksRes), nil
+	return pool.Wait()
 }
 
-func (c *HTTPClient) doBatchCall(ctx context.Context, endpoint string, reqs []*Message) ([]*Message, error) {
+func (c *HTTPClient) doBatchCall(ctx context.Context, endpoint string, batch Batch) error {
 	var (
 		buf    bytes.Buffer
-		res    Payload
+		res    = MessageOrBatch{Batch: batch}
 		logger = slogctx.FromCtx(ctx)
 	)
 
-	if len(reqs) == 0 {
-		return nil, nil
+	if len(batch) == 0 {
+		return nil
 	}
 
-	if err := json.NewEncoder(&buf).Encode(reqs); err != nil {
-		return nil, err
+	if err := json.NewEncoder(&buf).Encode(batch); err != nil {
+		return err
 	}
 
 	if logger.Enabled(ctx, slog.LevelDebug) {
 		logger.Debug("JSON-RPC request", "content", buf.String())
 	}
 
-	req, err := http.NewRequestWithContext(
-		ctx,
-		"POST",
-		endpoint,
-		&buf,
-	)
+	req, err := http.NewRequestWithContext(ctx, "POST", endpoint, &buf)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := c.client.Do(req)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("bad status code: %d", resp.StatusCode)
+		return fmt.Errorf("bad status code: %d", resp.StatusCode)
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&res); err != nil {
-		return nil, err
+		return err
 	}
 
 	if logger.Enabled(ctx, slog.Level(-10)) {
-		var js, _ = json.Marshal(res)
-		logger.Log(ctx, slog.Level(-10), "JSON-RPC response", "content", js)
+		logger.Log(ctx, slog.Level(-10), "JSON-RPC response", "content", lo.Must(json.Marshal(res)))
 	}
 
-	if len(res.Messages) == 0 && res.Message != nil {
-		return nil, res.Message.Error
+	if len(res.Batch) == 0 && res.Message != nil {
+		return res.Message.Error
 	}
 
-	if len(reqs) != len(res.Messages) {
-		return nil, fmt.Errorf("sent %d request but received %d responses", len(reqs), len(res.Messages))
-	}
-
-	return res.Messages, nil
+	return nil
 }
 
-func (c *HTTPClient) Call(ctx context.Context, endpoint string, req *Message) (*Message, error) {
+func (c *HTTPClient) Call(ctx context.Context, endpoint string, msg *Message) error {
 	var (
 		buf    bytes.Buffer
-		res    Message
 		logger = slogctx.FromCtx(ctx)
 	)
 
-	if req == nil {
-		return nil, nil
+	if msg == nil {
+		return nil
 	}
 
-	if err := json.NewEncoder(&buf).Encode(req); err != nil {
-		return nil, err
+	if err := json.NewEncoder(&buf).Encode(msg); err != nil {
+		return nil
 	}
 
 	if logger.Enabled(ctx, slog.LevelDebug) {
 		logger.Debug("JSON-RPC request", "content", buf.String())
 	}
 
-	httpReq, err := http.NewRequestWithContext(
-		ctx,
-		"POST",
-		endpoint,
-		&buf,
-	)
+	httpReq, err := http.NewRequestWithContext(ctx, "POST", endpoint, &buf)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpResp, err := c.client.Do(httpReq)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	defer httpResp.Body.Close()
 
 	if httpResp.StatusCode != 200 {
-		return nil, fmt.Errorf("bad status code: %d", httpResp.StatusCode)
+		return fmt.Errorf("bad status code: %d", httpResp.StatusCode)
 	}
 
-	if err := json.NewDecoder(httpResp.Body).Decode(&res); err != nil {
-		return nil, err
+	if err := json.NewDecoder(httpResp.Body).Decode(&msg); err != nil {
+		return err
 	}
 
 	if logger.Enabled(ctx, slog.Level(-10)) {
-		var js, _ = json.Marshal(res)
-		logger.Log(ctx, slog.Level(-10), "JSON-RPC response", "content", js)
+		logger.Log(ctx, slog.Level(-10), "JSON-RPC response", "content", lo.Must(json.Marshal(msg)))
 	}
 
-	return &res, nil
+	return nil
 }
 
 func (c *HTTPClient) Close() error {

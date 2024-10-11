@@ -6,6 +6,8 @@ github.com/agnosticeng/panicsafe v0.5.0 h1:rStbOzyOQ4I0fSXElcq1zX81XyxHvQQoNxD0X
 github.com/agnosticeng/panicsafe v0.5.0/go.mod h1:dXWabTdUv+kz5D/Uj+SHc3C6H6O/XpnLStkrRalYxZk=
 github.com/agnosticeng/slogcli v0.1.0 h1:eDcJlP2t0JWoaaAw3ezQw6hs2IZIcPiW8T6ShA091BQ=
 github.com/agnosticeng/slogcli v0.1.0/go.mod h1:BGrsScmPaZlyGf3vBIiWA0FqFVACNY6vhRotTiaKs00=
+github.com/agnosticeng/slogcli v0.1.1 h1:rS0jde4Ha3GafF7Ww25YQANqQDz9QnIYZ1M5ngnM8Vk=
+github.com/agnosticeng/slogcli v0.1.1/go.mod h1:BGrsScmPaZlyGf3vBIiWA0FqFVACNY6vhRotTiaKs00=
 github.com/bool64/shared v0.1.5 h1:fp3eUhBsrSjNCQPcSdQqZxxh9bBwrYiZ+zOKFkM0/2E=
 github.com/bool64/shared v0.1.5/go.mod h1:081yz68YC9jeFB3+Bbmno2RFWvGKv1lPKkMP6MHJlPs=
 github.com/btcsuite/btcd/btcec/v2 v2.3.4 h1:3EJjcN70HCu/mwqlUsGK8GcNVyLVxFDlWurTXGPFfiQ=

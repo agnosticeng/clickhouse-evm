@@ -17,6 +17,7 @@ func main() {
 		Name:   "agnostic-clickhouse-udf",
 		Flags:  slogcli.SlogFlags(),
 		Before: slogcli.SlogBefore,
+		After:  slogcli.SlogAfter,
 		Commands: []*cli.Command{
 			function.Command(),
 			table_function.Command(),

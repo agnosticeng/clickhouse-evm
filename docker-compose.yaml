@@ -7,6 +7,7 @@ services:
     ports: 
       - '9000:9000'
     volumes:
+      - ./tmp/clickhouse-server-custom-config.xml:/etc/clickhouse-server/config.d/clickhouse-server-custom-config.xml:ro
       - '${BUNDLE_PATH:-./tmp/bundle}/etc/clickhouse-server/ethereum_rpc_call_function.xml:/etc/clickhouse-server/ethereum_rpc_call_function.xml:ro'
       - '${BUNDLE_PATH:-./tmp/bundle}/etc/clickhouse-server/ethereum_rpc_function.xml:/etc/clickhouse-server/ethereum_rpc_function.xml:ro'
       - '${BUNDLE_PATH:-./tmp/bundle}/etc/clickhouse-server/evm_decode_call_function.xml:/etc/clickhouse-server/evm_decode_call_function.xml:ro'

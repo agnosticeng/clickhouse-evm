@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log/slog"
 	"os"
 
@@ -27,7 +26,7 @@ func main() {
 	var err = panicsafe.Recover(func() error { return app.Run(os.Args) })
 
 	if err != nil {
-		slog.Error(fmt.Sprintf("%v", err))
+		slog.Error(err.Error())
 		os.Exit(1)
 	}
 }

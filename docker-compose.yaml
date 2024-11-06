@@ -5,7 +5,7 @@ services:
     image: clickhouse/clickhouse-server:24.9.1
     restart: always
     ports: 
-      - '9000:9000'
+      - '127.0.0.1:9000:9000'
     volumes:
       - ./tmp/clickhouse-server-custom-config.xml:/etc/clickhouse-server/config.d/clickhouse-server-custom-config.xml:ro
       - '${BUNDLE_PATH:-./tmp/bundle}/etc/clickhouse-server/ethereum_rpc_call_function.xml:/etc/clickhouse-server/ethereum_rpc_call_function.xml:ro'

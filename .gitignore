@@ -6,5 +6,4 @@ venv
 *.pyc
 agnostic-clickhouse-udf
 .envrc
-
 dist/

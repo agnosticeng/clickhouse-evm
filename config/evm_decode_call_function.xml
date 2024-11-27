@@ -1,7 +1,7 @@
 <functions>
     <function>
         <type>executable_pool</type>
-        <pool_size>16</pool_size>
+        <pool_size>64</pool_size>
         <name>evm_decode_call</name>
         <argument>
             <name>input</name>

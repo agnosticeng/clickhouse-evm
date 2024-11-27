@@ -26,13 +26,25 @@ func Flags() []cli.Flag {
 			Value:   false,
 			EnvVars: []string{"ETHEREUM_RPC_DISABLE_BATCH"},
 		},
+		&cli.BoolFlag{
+			Name:    "fail-on-error",
+			Value:   false,
+			EnvVars: []string{"ETHEREUM_RPC_FAIL_ON_ERROR"},
+		},
+		&cli.BoolFlag{
+			Name:    "fail-on-null",
+			Value:   false,
+			EnvVars: []string{"ETHEREUM_RPC_FAIL_ON_NULL"},
+		},
 	}
 }
 
 func CallOptionsFromContext(ctx *cli.Context) []jsonrpc.CallOptionsFunc {
 	var callOpts []jsonrpc.CallOptionsFunc
-	callOpts = append(callOpts, jsonrpc.WithDisableBatch(ctx.Bool("disable-batch")))
 	callOpts = append(callOpts, jsonrpc.WithMatchBatchSize(ctx.Int("max-batch-size")))
 	callOpts = append(callOpts, jsonrpc.WithMaxConcurrentRequests(ctx.Int("max-concurrent-requests")))
+	callOpts = append(callOpts, jsonrpc.WithDisableBatch(ctx.Bool("disable-batch")))
+	callOpts = append(callOpts, jsonrpc.WithFailOnError(ctx.Bool("fail-on-error")))
+	callOpts = append(callOpts, jsonrpc.WithFailOnNull(ctx.Bool("fail-on-null")))
 	return callOpts
 }

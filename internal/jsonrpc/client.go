@@ -31,6 +31,10 @@ func (c *HTTPClient) BatchCall(ctx context.Context, endpoint string, batch Batch
 
 	var opts = NewCallOptions(optFuncs...)
 
+	if err := opts.ParseFromEndpoint(endpoint); err != nil {
+		return err
+	}
+
 	if opts.disableBatch {
 		return c.multiCall(ctx, endpoint, batch, *opts)
 	} else {
@@ -47,7 +51,7 @@ func (c *HTTPClient) multiCall(ctx context.Context, endpoint string, batch Batch
 
 	for i := 0; i < len(batch); i++ {
 		pool.Go(func(ctx context.Context) error {
-			return c.Call(ctx, endpoint, &batch[i])
+			return c.doCall(ctx, endpoint, &batch[i], opts)
 		})
 	}
 
@@ -56,7 +60,7 @@ func (c *HTTPClient) multiCall(ctx context.Context, endpoint string, batch Batch
 
 func (c *HTTPClient) batchCall(ctx context.Context, endpoint string, batch Batch, opts CallOptions) error {
 	if opts.maxBatchSize >= len(batch) {
-		return c.doBatchCall(ctx, endpoint, batch)
+		return c.doBatchCall(ctx, endpoint, batch, opts)
 	}
 
 	var pool = pool.New().
@@ -67,14 +71,14 @@ func (c *HTTPClient) batchCall(ctx context.Context, endpoint string, batch Batch
 
 	for _, chunk := range lo.Chunk(batch, opts.maxBatchSize) {
 		pool.Go(func(ctx context.Context) error {
-			return c.doBatchCall(ctx, endpoint, chunk)
+			return c.doBatchCall(ctx, endpoint, chunk, opts)
 		})
 	}
 
 	return pool.Wait()
 }
 
-func (c *HTTPClient) doBatchCall(ctx context.Context, endpoint string, batch Batch) error {
+func (c *HTTPClient) doBatchCall(ctx context.Context, endpoint string, batch Batch, opts CallOptions) error {
 	var (
 		buf    bytes.Buffer
 		res    = MessageOrBatch{Batch: batch}
@@ -90,7 +94,7 @@ func (c *HTTPClient) doBatchCall(ctx context.Context, endpoint string, batch Bat
 	}
 
 	if logger.Enabled(ctx, slog.LevelDebug) {
-		logger.Debug("JSON-RPC request", "content", buf.String())
+		logger.Debug("JSON-RPC request", "endpoint", endpoint, "content", buf.String())
 	}
 
 	req, err := http.NewRequestWithContext(ctx, "POST", endpoint, &buf)
@@ -117,17 +121,39 @@ func (c *HTTPClient) doBatchCall(ctx context.Context, endpoint string, batch Bat
 	}
 
 	if logger.Enabled(ctx, slog.Level(-10)) {
-		logger.Log(ctx, slog.Level(-10), "JSON-RPC response", "content", lo.Must(json.Marshal(res)))
+		logger.Log(ctx, slog.Level(-10), "JSON-RPC response", "endpoint", endpoint, "content", lo.Must(json.Marshal(res)))
 	}
 
 	if len(res.Batch) == 0 && res.Message != nil {
 		return res.Message.Error
 	}
 
+	if opts.failOnError || opts.failOnNull {
+		for _, item := range res.Batch {
+			if opts.failOnError && item.Error != nil {
+				return item.Error
+			}
+
+			if opts.failOnNull && (item.Result == nil || bytes.Equal(item.Result, []byte(`null`))) {
+				return fmt.Errorf("null result")
+			}
+		}
+	}
+
 	return nil
 }
 
-func (c *HTTPClient) Call(ctx context.Context, endpoint string, msg *Message) error {
+func (c *HTTPClient) Call(ctx context.Context, endpoint string, msg *Message, optFuncs ...CallOptionsFunc) error {
+	var opts = NewCallOptions(optFuncs...)
+
+	if err := opts.ParseFromEndpoint(endpoint); err != nil {
+		return err
+	}
+
+	return c.doCall(ctx, endpoint, msg, *opts)
+}
+
+func (c *HTTPClient) doCall(ctx context.Context, endpoint string, msg *Message, opts CallOptions) error {
 	var (
 		buf    bytes.Buffer
 		logger = slogctx.FromCtx(ctx)
@@ -142,7 +168,7 @@ func (c *HTTPClient) Call(ctx context.Context, endpoint string, msg *Message) er
 	}
 
 	if logger.Enabled(ctx, slog.LevelDebug) {
-		logger.Debug("JSON-RPC request", "content", buf.String())
+		logger.Debug("JSON-RPC request", "endpoint", endpoint, "content", buf.String())
 	}
 
 	httpReq, err := http.NewRequestWithContext(ctx, "POST", endpoint, &buf)
@@ -169,7 +195,15 @@ func (c *HTTPClient) Call(ctx context.Context, endpoint string, msg *Message) er
 	}
 
 	if logger.Enabled(ctx, slog.Level(-10)) {
-		logger.Log(ctx, slog.Level(-10), "JSON-RPC response", "content", lo.Must(json.Marshal(msg)))
+		logger.Log(ctx, slog.Level(-10), "JSON-RPC response", "endpoint", endpoint, "content", lo.Must(json.Marshal(msg)))
+	}
+
+	if opts.failOnError && msg.Error != nil {
+		return msg.Error
+	}
+
+	if opts.failOnNull && (msg.Result == nil || bytes.Equal(msg.Result, []byte(`null`))) {
+		return fmt.Errorf("null result")
 	}
 
 	return nil

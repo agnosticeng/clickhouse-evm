@@ -13,7 +13,7 @@
         </argument>
         <argument>
             <name>abi</name>
-            <type>String</type>
+            <type>Array(String)</type>
         </argument>
         <return_type>String</return_type>
         <format>Native</format>

@@ -1,6 +1,7 @@
 package file
 
 import (
+	"net/http"
 	"os"
 	"strings"
 
@@ -12,7 +13,31 @@ type FileABIProvider struct {
 	idx indexed_abi.IndexedABI
 }
 
-func NewFileABIProvider(path string) (*FileABIProvider, error) {
+func (p *FileABIProvider) Events(selector string) ([]*abi.Event, error) {
+	var evt = p.idx.EventsSigHashIndex[selector]
+
+	if evt == nil {
+		return nil, nil
+	} else {
+		return []*abi.Event{evt}, nil
+	}
+}
+
+func (p *FileABIProvider) Methods(selector string) ([]*abi.Method, error) {
+	var meth = p.idx.MethodsSigHashIndex[selector]
+
+	if meth == nil {
+		return nil, nil
+	} else {
+		return []*abi.Method{meth}, nil
+	}
+}
+
+func (p *FileABIProvider) Close() error {
+	return nil
+}
+
+func FromPath(path string) (*FileABIProvider, error) {
 	path = strings.TrimPrefix(path, "file://")
 
 	f, err := os.Open(path)
@@ -34,14 +59,22 @@ func NewFileABIProvider(path string) (*FileABIProvider, error) {
 	}, nil
 }
 
-func (p *FileABIProvider) Event(selector string) (*abi.Event, error) {
-	return p.idx.EventsSigHashIndex[selector], nil
-}
+func FromURL(path string) (*FileABIProvider, error) {
+	resp, err := http.Get(path)
 
-func (p *FileABIProvider) Method(selector string) (*abi.Method, error) {
-	return p.idx.MethodsSigHashIndex[selector], nil
-}
+	if err != nil {
+		return nil, err
+	}
 
-func (p *FileABIProvider) Close() error {
-	return nil
+	defer resp.Body.Close()
+
+	idx, err := indexed_abi.JSON(resp.Body)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &FileABIProvider{
+		idx: idx,
+	}, nil
 }

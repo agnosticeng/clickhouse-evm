@@ -5,7 +5,7 @@ import (
 )
 
 type ABIProvider interface {
-	Event(selector string) (*abi.Event, error)
-	Method(selector string) (*abi.Method, error)
+	Events(selector string) ([]*abi.Event, error)
+	Methods(selector string) ([]*abi.Method, error)
 	Close() error
 }

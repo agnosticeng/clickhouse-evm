@@ -10,11 +10,11 @@ func NewNoopABIProvider() *NoopABIProvider {
 	return &NoopABIProvider{}
 }
 
-func (p *NoopABIProvider) Event(selector string) (*abi.Event, error) {
+func (p *NoopABIProvider) Events(selector string) ([]*abi.Event, error) {
 	return nil, nil
 }
 
-func (p *NoopABIProvider) Method(selector string) (*abi.Method, error) {
+func (p *NoopABIProvider) Methods(selector string) ([]*abi.Method, error) {
 	return nil, nil
 }
 

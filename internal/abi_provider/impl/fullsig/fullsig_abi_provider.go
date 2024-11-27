@@ -40,12 +40,20 @@ func NewFullsigABIProvider(s string) (*FullsigABIProvider, error) {
 	return &p, nil
 }
 
-func (p *FullsigABIProvider) Event(selector string) (*abi.Event, error) {
-	return p.event, nil
+func (p *FullsigABIProvider) Events(selector string) ([]*abi.Event, error) {
+	if selector != string(p.event.ID.Bytes()) {
+		return nil, nil
+	}
+
+	return []*abi.Event{p.event}, nil
 }
 
-func (p *FullsigABIProvider) Method(selector string) (*abi.Method, error) {
-	return p.method, nil
+func (p *FullsigABIProvider) Methods(selector string) ([]*abi.Method, error) {
+	if selector != string(p.method.ID) {
+		return nil, nil
+	}
+
+	return []*abi.Method{p.method}, nil
 }
 
 func (p *FullsigABIProvider) Close() error {

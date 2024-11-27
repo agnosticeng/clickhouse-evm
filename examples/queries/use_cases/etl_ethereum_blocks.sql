@@ -9,8 +9,9 @@ with
                 ethereum_rpc(
                     'eth_getBlockByNumber', 
                     [evm_hex_encode_int(n), 'false'], 
-                    ''
+                    'fail-on-error=true&fail-on-null=true'
                 ),
+                'value',
                 'JSON'
             ) as block
         from block_numbers
@@ -45,4 +46,4 @@ with
         from q0
     )
 
-select * from q1
+select * from q0

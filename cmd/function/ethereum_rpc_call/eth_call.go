@@ -1,7 +1,6 @@
 package ethereum_rpc_call
 
 import (
-	"encoding/json"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -11,11 +10,6 @@ type TransactionObject struct {
 	From *string `json:"from"`
 	To   string  `json:"to"`
 	Data string  `json:"data"`
-}
-
-type Result struct {
-	Error string          `json:"error,omitempty"`
-	Value json.RawMessage `json:"value,omitempty"`
 }
 
 func BlockNumberToString(n int64) string {

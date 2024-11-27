@@ -1,6 +1,6 @@
 with 
     q0 as (
-        select number as n from numbers(20764111, 1000)
+        select number as n from numbers(20764111, 5)
     ),
 
     q1 as (
@@ -9,16 +9,18 @@ with
                 ethereum_rpc(
                     'eth_getBlockByNumber', 
                     [evm_hex_encode_int(n), 'false'], 
-                    ''
+                    'fail-on-error=true&fail-on-null=true'
                 ),
+                'value',
                 'JSON'
             ) as block,
             JSONExtract(
                 ethereum_rpc(
                     'eth_getBlockReceipts', 
                     [evm_hex_encode_int(n)], 
-                    ''
+                    'fail-on-error=true&fail-on-null=true'
                 ),
+                'value',
                 'Array(JSON)'
             ) as receipts
         from q0

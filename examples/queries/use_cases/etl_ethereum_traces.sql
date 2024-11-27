@@ -12,13 +12,15 @@ with
         select
             n as block_number,
             JSONExtract(
-                ethereum_rpc('eth_getBlockByNumber', [evm_hex_encode_int(n), 'false'], ''),
+                ethereum_rpc('eth_getBlockByNumber', [evm_hex_encode_int(n), 'false'], 'fail-on-error=true&fail-on-null=true'),
+                'value',
                 'Tuple(
                     timestamp String
                 )'
             ) as block,
             JSONExtract(
-                ethereum_rpc('eth_getBlockReceipts', [evm_hex_encode_int(n)], ''),
+                ethereum_rpc('eth_getBlockReceipts', [evm_hex_encode_int(n)], 'fail-on-error=true&fail-on-null=true'),
+                'value',
                 'Array(
                     Tuple(
                         blockHash String,
@@ -31,7 +33,8 @@ with
                 )'
             ) as receipts,
             JSONExtract(
-                ethereum_rpc('trace_block', [evm_hex_encode_int(n)], ''),
+                ethereum_rpc('trace_block', [evm_hex_encode_int(n)], 'fail-on-error=true&fail-on-null=true'),
+                'value',
                 'Array(
                     Tuple(
                         transactionPosition UInt32,

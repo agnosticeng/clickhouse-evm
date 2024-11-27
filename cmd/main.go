@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log/slog"
 	"os"
 
 	"github.com/agnosticeng/agnostic-clickhouse-udf/cmd/function"
@@ -9,6 +8,7 @@ import (
 	"github.com/agnosticeng/panicsafe"
 	"github.com/agnosticeng/slogcli"
 	"github.com/urfave/cli/v2"
+	slogctx "github.com/veqryn/slog-context"
 )
 
 func main() {
@@ -17,6 +17,9 @@ func main() {
 		Flags:  slogcli.SlogFlags(),
 		Before: slogcli.SlogBefore,
 		After:  slogcli.SlogAfter,
+		ExitErrHandler: func(ctx *cli.Context, err error) {
+			slogctx.FromCtx(ctx.Context).Error(err.Error())
+		},
 		Commands: []*cli.Command{
 			function.Command(),
 			table_function.Command(),
@@ -26,7 +29,6 @@ func main() {
 	var err = panicsafe.Recover(func() error { return app.Run(os.Args) })
 
 	if err != nil {
-		slog.Error(err.Error())
 		os.Exit(1)
 	}
 }

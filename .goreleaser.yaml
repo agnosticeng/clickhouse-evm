@@ -22,7 +22,7 @@ builds:
 archives:
   - format: tar.gz
 
-    name_template: "{{ .ProjectName }}_{{.Os}}_{{.Arch}}{{ with .Amd64 }}_{{ . }}{{ end }}"
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{.Os}}_{{.Arch}}{{ with .Amd64 }}_{{ . }}{{ end }}"
 
     files:
       - src: "config/*.*ml"

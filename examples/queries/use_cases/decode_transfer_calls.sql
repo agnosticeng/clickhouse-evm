@@ -8,7 +8,7 @@ with
                 evm_decode_call(
                     evm_hex_decode(trace.action.input),
                     evm_hex_decode(trace.result.output),
-                    ['transfer(address,uint256)(bool)']
+                    ['function transfer(address,uint256)(bool)']
                 ),
                 'JSON'
             ) as call

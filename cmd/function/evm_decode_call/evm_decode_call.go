@@ -1,7 +1,6 @@
 package evm_decode_call
 
 import (
-	stdjson "encoding/json"
 	"errors"
 	"io"
 	"os"
@@ -9,11 +8,10 @@ import (
 	"github.com/ClickHouse/ch-go/proto"
 	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/abi_provider"
 	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/abi_provider/impl"
-	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/memo"
 	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/types"
-	"github.com/agnosticeng/evmabi/json"
+	"github.com/agnosticeng/concu/memo"
+	"github.com/agnosticeng/evmabi/encoding/json"
 	"github.com/agnosticeng/panicsafe"
-	"github.com/samber/lo"
 	"github.com/urfave/cli/v2"
 	slogctx "github.com/veqryn/slog-context"
 )
@@ -42,14 +40,14 @@ func Command() *cli.Command {
 				var (
 					buf proto.Buffer
 
-					inputDataCol    = new(proto.ColBytes)
-					outputDataCol   = new(proto.ColBytes)
-					inputsAbiCol    = proto.NewArray(new(proto.ColStr))
-					outputResultCol = new(proto.ColBytes)
+					inputInputDataCol  = new(proto.ColBytes)
+					inputOutputDataCol = new(proto.ColBytes)
+					inputsAbiCol       = proto.NewArray(new(proto.ColStr))
+					outputResultCol    = new(proto.ColBytes)
 
 					input = proto.Results{
-						{Name: "input", Data: inputDataCol},
-						{Name: "output", Data: outputDataCol},
+						{Name: "input", Data: inputInputDataCol},
+						{Name: "output", Data: inputOutputDataCol},
 						{Name: "abi", Data: inputsAbiCol},
 					}
 
@@ -78,8 +76,8 @@ func Command() *cli.Command {
 
 					for i := 0; i < input.Rows(); i++ {
 						var (
-							input             = inputDataCol.Row(i)
-							output            = outputDataCol.Row(i)
+							input             = inputInputDataCol.Row(i)
+							output            = inputOutputDataCol.Row(i)
 							abiProviders      = inputsAbiCol.Row(i)
 							decoded           bool
 							lastDecodingError error
@@ -112,7 +110,7 @@ func Command() *cli.Command {
 									continue
 								}
 
-								outputResultCol.Append(lo.Must(stdjson.Marshal(types.Result{Value: lo.Must(n.MarshalJSON())})))
+								outputResultCol.Append((&types.Result{Value: &n}).ToJSON())
 								decoded = true
 								break decodeLoop
 							}
@@ -120,9 +118,9 @@ func Command() *cli.Command {
 
 						if !decoded {
 							if lastDecodingError != nil {
-								outputResultCol.Append(lo.Must(stdjson.Marshal(types.Result{Error: lastDecodingError.Error()})))
+								outputResultCol.Append((&types.Result{Error: lastDecodingError.Error()}).ToJSON())
 							} else {
-								outputResultCol.Append(lo.Must(stdjson.Marshal(types.Result{})))
+								outputResultCol.Append((&types.Result{Error: "cannot decode call"}).ToJSON())
 							}
 						}
 					}
@@ -142,8 +140,8 @@ func Command() *cli.Command {
 
 					proto.Reset(
 						&buf,
-						inputDataCol,
-						outputDataCol,
+						inputInputDataCol,
+						inputOutputDataCol,
 						inputsAbiCol,
 						outputResultCol,
 					)

@@ -1,0 +1,19 @@
+<functions>
+    <function>
+        <type>executable_pool</type>
+        <pool_size>0</pool_size>
+        <max_command_execution_time>300</max_command_execution_time>
+        <name>evm_descriptor_from_fullsig</name>
+        <argument>
+            <name>fullsig</name>
+            <type>String</type>
+        </argument>
+        <argument>
+            <name>type</name>
+            <type>String</type>
+        </argument>
+        <return_type>String</return_type>
+        <format>Native</format>
+        <command>agnostic-clickhouse-udf function evm-descriptor-from-fullsig</command>
+    </function>
+</functions>

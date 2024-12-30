@@ -1,0 +1,8 @@
+<clickhouse>
+<s3>
+    <ovh-rbx>
+        <endpoint>https://s3.rbx.io.cloud.ovh.net</endpoint>
+        <region>rbx</region>
+    </ovh-rbx>
+</s3>
+</clickhouse>

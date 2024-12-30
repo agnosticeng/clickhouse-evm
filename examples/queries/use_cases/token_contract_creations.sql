@@ -4,12 +4,12 @@ select
     trace.action.from as creator,
     trace.result.address as contract_address,
     JSONExtractString(
-        ethereum_rpc_call(contract_address, 'symbol()(string)', '', -1::Int64, ''),
+        ethereum_rpc_call(contract_address, 'function symbol()(string)', '', -1::Int64, ''),
         'value',
         'arg0'
     ) as symbol,
     JSONExtractUInt(
-        ethereum_rpc_call(contract_address, 'decimals()(uint8)', '', -1::Int64, ''),
+        ethereum_rpc_call(contract_address, 'function decimals()(uint8)', '', -1::Int64, ''),
         'value',
         'arg0'
     ) as decimals

@@ -1,7 +1,7 @@
 package ethereum_rpc_call
 
 import (
-	"encoding/json"
+	stdjson "encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -12,10 +12,10 @@ import (
 	"github.com/ClickHouse/ch-go/proto"
 	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/jsonrpc"
 	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/jsonrpc_cli"
-	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/memo"
 	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/types"
+	"github.com/agnosticeng/concu/memo"
+	"github.com/agnosticeng/evmabi/encoding/json"
 	"github.com/agnosticeng/evmabi/fullsig"
-	evmabi_json "github.com/agnosticeng/evmabi/json"
 	"github.com/agnosticeng/panicsafe"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
@@ -113,7 +113,7 @@ func Command() *cli.Command {
 						}
 
 						if len(data) > 0 {
-							if err := json.Unmarshal(data, &inputs); err != nil {
+							if err := stdjson.Unmarshal(data, &inputs); err != nil {
 								return err
 							}
 						}
@@ -139,7 +139,7 @@ func Command() *cli.Command {
 							inputData = append(inputData, d...)
 						}
 
-						params, err := json.Marshal([]interface{}{
+						params, err := stdjson.Marshal([]interface{}{
 							TransactionObject{
 								To:   to,
 								Data: string(hexutil.Encode(inputData)),
@@ -165,7 +165,7 @@ func Command() *cli.Command {
 
 					for i := 0; i < input.Rows(); i++ {
 						var res = decodeResult(cache, inputFullSigCol.Row(i), &batch[i])
-						js, err := json.Marshal(res)
+						js, err := stdjson.Marshal(res)
 
 						if err != nil {
 							return err
@@ -213,7 +213,7 @@ func decodeResult(
 
 	var strData string
 
-	if err := json.Unmarshal(resp.Result, &strData); err != nil {
+	if err := stdjson.Unmarshal(resp.Result, &strData); err != nil {
 		return types.Result{Error: err.Error()}
 	}
 
@@ -233,19 +233,13 @@ func decodeResult(
 		return types.Result{}
 	}
 
-	n, err := evmabi_json.DecodeArguments(data, meth.Outputs)
+	n, err := json.DecodeArguments(data, meth.Outputs)
 
 	if err != nil {
 		return types.Result{Error: err.Error()}
 	}
 
-	data, err = n.MarshalJSON()
-
-	if err != nil {
-		return types.Result{Error: err.Error()}
-	}
-
-	return types.Result{Value: data}
+	return types.Result{Value: &n}
 }
 
 func prepareParams(meth *abi.Method, values []interface{}) ([]interface{}, error) {

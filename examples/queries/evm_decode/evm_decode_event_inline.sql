@@ -5,5 +5,5 @@ select evm_decode_event(
 		evm_hex_decode('0x000000000000000000000000936c700adf05d1118d6550a3355f66e93c9476c6')
 	],
 	evm_hex_decode('0x0000000000000000000000000000000000000000000000000000000252e9f940'),
-	['Transfer(indexed address, indexed address, uint256)']
+	['event Transfer(address indexed,address indexed,uint256)']
 )

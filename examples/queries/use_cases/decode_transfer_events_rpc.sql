@@ -7,7 +7,7 @@ with
                 evm_decode_event(
                     arrayMap(x -> evm_hex_decode(x), l.topics),
                     evm_hex_decode(l.data),
-                    ['Transfer(indexed address, indexed address, uint256)']
+                    ['event Transfer(address indexed, address indexed, uint256)']
                 ),
                 'JSON'
             ) as evt

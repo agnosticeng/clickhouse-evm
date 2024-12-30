@@ -2,6 +2,7 @@ package fullsig
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/agnosticeng/evmabi/fullsig"
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -19,7 +20,8 @@ func NewFullsigABIProvider(s string) (*FullsigABIProvider, error) {
 		return nil, fmt.Errorf("fullsig must not be empty")
 	}
 
-	if s[0] <= 'Z' {
+	switch {
+	case strings.HasPrefix(s, "event"):
 		evt, err := fullsig.ParseEvent(s)
 
 		if err != nil {
@@ -27,7 +29,8 @@ func NewFullsigABIProvider(s string) (*FullsigABIProvider, error) {
 		}
 
 		p.event = &evt
-	} else {
+
+	case strings.HasPrefix(s, "function"):
 		meth, err := fullsig.ParseMethod(s)
 
 		if err != nil {
@@ -35,13 +38,16 @@ func NewFullsigABIProvider(s string) (*FullsigABIProvider, error) {
 		}
 
 		p.method = &meth
+
+	default:
+		return nil, fmt.Errorf("unknown fullsig kind: %s", s)
 	}
 
 	return &p, nil
 }
 
 func (p *FullsigABIProvider) Events(selector string) ([]*abi.Event, error) {
-	if selector != string(p.event.ID.Bytes()) {
+	if p.event == nil || selector != string(p.event.ID.Bytes()) {
 		return nil, nil
 	}
 
@@ -49,7 +55,7 @@ func (p *FullsigABIProvider) Events(selector string) ([]*abi.Event, error) {
 }
 
 func (p *FullsigABIProvider) Methods(selector string) ([]*abi.Method, error) {
-	if selector != string(p.method.ID) {
+	if p.method == nil || selector != string(p.method.ID) {
 		return nil, nil
 	}
 

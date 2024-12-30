@@ -2,7 +2,6 @@ package ethereum_rpc
 
 import (
 	"encoding/json"
-	stdjson "encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -109,9 +108,9 @@ func Command() *cli.Command {
 
 					for i := 0; i < input.Rows(); i++ {
 						if resp := batch[i]; resp.Error != nil {
-							outputResultCol.Append(lo.Must(stdjson.Marshal(types.Result{Error: resp.Error.Error()})))
+							outputResultCol.Append((&types.Result{Error: resp.Error.Error()}).ToJSON())
 						} else {
-							outputResultCol.Append(lo.Must(stdjson.Marshal(types.Result{Value: resp.Result})))
+							outputResultCol.Append((&types.Result{Value: resp.Result}).ToJSON())
 						}
 					}
 

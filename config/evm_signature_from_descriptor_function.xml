@@ -2,13 +2,14 @@
     <function>
         <type>executable_pool</type>
         <pool_size>0</pool_size>
-        <name>keccak256</name>
+        <max_command_execution_time>300</max_command_execution_time>
+        <name>evm_signature_from_descriptor</name>
         <argument>
-            <name>str</name>
+            <name>event_descriptor</name>
             <type>String</type>
         </argument>
         <return_type>String</return_type>
         <format>Native</format>
-        <command>agnostic-clickhouse-udf function keccak256</command>
+        <command>agnostic-clickhouse-udf function evm-signature-from-descriptor</command>
     </function>
 </functions>

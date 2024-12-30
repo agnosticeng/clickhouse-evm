@@ -2,19 +2,17 @@ package evm_decode_event
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"os"
-
-	stdjson "encoding/json"
 
 	"github.com/ClickHouse/ch-go/proto"
 	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/abi_provider"
 	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/abi_provider/impl"
-	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/memo"
 	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/types"
-	"github.com/agnosticeng/evmabi/json"
+	"github.com/agnosticeng/concu/memo"
+	"github.com/agnosticeng/evmabi/encoding/json"
 	"github.com/agnosticeng/panicsafe"
-	"github.com/samber/lo"
 	"github.com/urfave/cli/v2"
 )
 
@@ -85,12 +83,19 @@ func Command() *cli.Command {
 							lastDecodingError error
 						)
 
+						if len(topics) == 0 {
+							outputResultCol.Append((&types.Result{Error: "cannot decode event with empty topics[0]"}).ToJSON())
+							continue
+						}
+
 					decodeLoop:
 						for _, abiProvider := range abiProviders {
+							// slogctx.Info(ctx.Context, "ABIPROVIDER", "str", abiProvider)
+
 							p, err := abiProviderCache(abiProvider)
 
 							if err != nil {
-								return err
+								return fmt.Errorf("failed to parse ABI provider '%s': %w", abiProvider, err)
 							}
 
 							evts, err := p.Events(string(topics[0]))
@@ -100,6 +105,14 @@ func Command() *cli.Command {
 							}
 
 							for _, evt := range evts {
+								// slogctx.Info(
+								// 	ctx.Context,
+								// 	"DECODE",
+								// 	"sig", evt.Sig,
+								// 	"topics", lo.Map(topics, func(topic []byte, _ int) string { return hexutil.Encode(topic) }),
+								// 	"data", hexutil.Encode(data),
+								// )
+
 								n, err := json.DecodeLog(topics, data, *evt)
 
 								if err != nil {
@@ -111,7 +124,7 @@ func Command() *cli.Command {
 									continue
 								}
 
-								outputResultCol.Append(lo.Must(stdjson.Marshal(types.Result{Value: lo.Must(n.MarshalJSON())})))
+								outputResultCol.Append((&types.Result{Value: &n}).ToJSON())
 								decoded = true
 								break decodeLoop
 							}
@@ -119,9 +132,9 @@ func Command() *cli.Command {
 
 						if !decoded {
 							if lastDecodingError != nil {
-								outputResultCol.Append(lo.Must(stdjson.Marshal(types.Result{Error: lastDecodingError.Error()})))
+								outputResultCol.Append((&types.Result{Error: lastDecodingError.Error()}).ToJSON())
 							} else {
-								outputResultCol.Append(lo.Must(stdjson.Marshal(types.Result{})))
+								outputResultCol.Append((&types.Result{Error: "cannot decode event"}).ToJSON())
 							}
 						}
 					}

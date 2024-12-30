@@ -13,10 +13,11 @@ bundle: build
 	cp bin/agnostic-clickhouse-udf ${BUNDLE_PATH}/var/lib/clickhouse/user_scripts/
 	cp config/*_function.*ml ${BUNDLE_PATH}/etc/clickhouse-server/
 	cp sql/function_*.sql ${BUNDLE_PATH}/var/lib/clickhouse/user_defined/
+	tar -cvzf ${BUNDLE_PATH}/../bundle.tar.gz -C ${BUNDLE_PATH} .
 
 test:
 	go test -v ./...
 
 clean:
 	rm -rf bin
-	rm -rf ${BUNDLE_PATH}
+	rm -rf ${BUNDLE_PATH} 

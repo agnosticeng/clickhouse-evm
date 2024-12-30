@@ -1,7 +1,7 @@
 select 
     * 
 from executable(
-    'agnostic-clickhouse-udf table-function ethereum-rpc-filter eth_newFilter',
+    'agnostic-clickhouse-udf table-function ethereum-rpc-filter eth_newFilter --endpoint=https://eth.llamarpc.com',
     Native, 
     'result String', 
     (

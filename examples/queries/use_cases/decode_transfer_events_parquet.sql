@@ -7,7 +7,7 @@ with
                 evm_decode_event(
                     logs.topics::Array(String),
                     logs.data::String,
-                    ['Transfer(indexed address, indexed address, uint256)']
+                    ['event Transfer(address indexed, address indexed, uint256)']
                 ),
                 'JSON'
             ) as evt

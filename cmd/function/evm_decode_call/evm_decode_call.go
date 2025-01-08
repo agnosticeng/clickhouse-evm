@@ -24,10 +24,15 @@ func Command() *cli.Command {
 				Name:    "abi-provider",
 				EnvVars: []string{"EVM_ABI_PROVIDER"},
 			},
+			&cli.Uint64Flag{
+				Name:    "abi-provider-cache-size",
+				Value:   2000,
+				EnvVars: []string{"EVM_ABI_PROVIDER_CACHE_SIZE"},
+			},
 		},
 		Action: func(ctx *cli.Context) error {
 			return panicsafe.Recover(func() error {
-				var abiProviderCache = memo.KeyedErr[string, abi_provider.ABIProvider](
+				var abiProviderCache = memo.KeyedErrTheine[string, abi_provider.ABIProvider](
 					func(key string) (abi_provider.ABIProvider, error) {
 						if len(key) == 0 {
 							return impl.NewABIProvider(ctx.String("abi-provider"))
@@ -35,6 +40,7 @@ func Command() *cli.Command {
 							return impl.NewABIProvider(key)
 						}
 					},
+					int64(ctx.Uint64("abi-provider-cache-size")),
 				)
 
 				var (

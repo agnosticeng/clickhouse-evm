@@ -96,8 +96,6 @@ func Command() *cli.Command {
 
 					decodeLoop:
 						for _, abiProvider := range abiProviders {
-							// slogctx.Info(ctx.Context, "ABIPROVIDER", "str", abiProvider)
-
 							p, err := abiProviderCache(abiProvider)
 
 							if err != nil {
@@ -111,14 +109,6 @@ func Command() *cli.Command {
 							}
 
 							for _, evt := range evts {
-								// slogctx.Info(
-								// 	ctx.Context,
-								// 	"DECODE",
-								// 	"sig", evt.Sig,
-								// 	"topics", lo.Map(topics, func(topic []byte, _ int) string { return hexutil.Encode(topic) }),
-								// 	"data", hexutil.Encode(data),
-								// )
-
 								n, err := json.DecodeLog(topics, data, *evt)
 
 								if err != nil {

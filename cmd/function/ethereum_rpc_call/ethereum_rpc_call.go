@@ -7,6 +7,7 @@ import (
 	"io"
 	"math/big"
 	"os"
+	"reflect"
 	"strings"
 
 	"github.com/ClickHouse/ch-go/proto"
@@ -260,6 +261,10 @@ func prepareParams(meth *abi.Method, values []interface{}) ([]interface{}, error
 			res[i], err = prepareBigInt(values[i])
 		case abi.UintTy:
 			res[i], err = prepareBigInt(values[i])
+		case abi.FixedBytesTy:
+			res[i], err = prepareFixedBytes(meth.Inputs[i].Type, values[i])
+		case abi.BytesTy:
+			res[i], err = prepareBytes(values[i])
 		default:
 			res[i] = values[i]
 		}
@@ -270,6 +275,39 @@ func prepareParams(meth *abi.Method, values []interface{}) ([]interface{}, error
 	}
 
 	return res, nil
+}
+
+func prepareFixedBytes(t abi.Type, v interface{}) (interface{}, error) {
+	s, ok := v.(string)
+
+	if !ok {
+		return nil, fmt.Errorf("invalid string: %v", v)
+	}
+
+	var (
+		data = common.FromHex(s)
+		arr  = reflect.New(t.GetType()).Elem()
+	)
+
+	if t.Size != len(data) {
+		return nil, fmt.Errorf("invalid %s value: %s (%d)", t.String(), s, len(data))
+	}
+
+	for i := 0; i < t.Size; i++ {
+		arr.Index(i).Set(reflect.ValueOf(data[i]))
+	}
+
+	return arr.Interface(), nil
+}
+
+func prepareBytes(v interface{}) ([]byte, error) {
+	s, ok := v.(string)
+
+	if !ok {
+		return nil, fmt.Errorf("invalid string: %v", v)
+	}
+
+	return common.Hex2Bytes(s), nil
 }
 
 func prepareAddress(v interface{}) (common.Address, error) {

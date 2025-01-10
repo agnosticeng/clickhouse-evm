@@ -21,6 +21,6 @@ docker-compose up -d
 ### Installing a bundle in a running clickhouse-server container
 
 ```sh
-su - clickhouse -c "wget -qO- https://github.com/agnosticeng/agnostic-clickhouse-udf/releases/download/v0.0.5/agnostic-clickhouse-udf_0.0.5_linux_amd64_v3.tar.gz | tar xvz -C /"
+su - clickhouse -c "wget -qO- https://github.com/agnosticeng/agnostic-clickhouse-udf/releases/download/v0.0.6/agnostic-clickhouse-udf_0.0.6_linux_amd64_v3.tar.gz | tar xvz -C /"
 for f in /var/lib/clickhouse/user_defined/*.sql; do clickhouse client --queries-file $f; done
 ```

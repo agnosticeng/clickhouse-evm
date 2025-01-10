@@ -5,7 +5,7 @@ go 1.23.2
 require (
 	github.com/ClickHouse/ch-go v0.62.0
 	github.com/agnosticeng/concu v0.0.2
-	github.com/agnosticeng/evmabi v0.2.0
+	github.com/agnosticeng/evmabi v0.2.1
 	github.com/agnosticeng/panicsafe v0.5.0
 	github.com/agnosticeng/slogcli v0.1.1
 	github.com/bytedance/sonic v1.12.6
@@ -28,7 +28,7 @@ require (
 	github.com/go-faster/errors v0.7.1 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/holiman/uint256 v1.3.1 // indirect
+	github.com/holiman/uint256 v1.3.2 // indirect
 	github.com/klauspost/compress v1.17.9 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.9 // indirect
 	github.com/pierrec/lz4/v4 v4.1.21 // indirect

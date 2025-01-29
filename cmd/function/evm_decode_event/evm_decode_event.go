@@ -46,7 +46,7 @@ func Command() *cli.Command {
 				var (
 					buf proto.Buffer
 
-					inputTopicsCol  = proto.NewArray(new(proto.ColBytes))
+					inputTopicsCol  = proto.NewArray(new(proto.ColFixedStr32))
 					inputDataCol    = new(proto.ColBytes)
 					inputsAbiCol    = proto.NewArray(new(proto.ColStr))
 					outputResultCol = new(proto.ColBytes)
@@ -102,7 +102,7 @@ func Command() *cli.Command {
 								return fmt.Errorf("failed to parse ABI provider '%s': %w", abiProvider, err)
 							}
 
-							evts, err := p.Events(string(topics[0]))
+							evts, err := p.Events(string(topics[0][:]))
 
 							if err != nil {
 								return err

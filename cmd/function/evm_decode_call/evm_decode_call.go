@@ -44,7 +44,8 @@ func Command() *cli.Command {
 				)
 
 				var (
-					buf proto.Buffer
+					logger = slogctx.FromCtx(ctx.Context)
+					buf    proto.Buffer
 
 					inputInputDataCol  = new(proto.ColBytes)
 					inputOutputDataCol = new(proto.ColBytes)
@@ -89,12 +90,17 @@ func Command() *cli.Command {
 							lastDecodingError error
 						)
 
+						if len(input) < 4 {
+							outputResultCol.Append((&types.Result{Error: "cannot decode call with input length < 4"}).ToJSON())
+							continue
+						}
+
 					decodeLoop:
 						for _, abiProvider := range abiProviders {
 							p, err := abiProviderCache(abiProvider)
 
 							if err != nil {
-								slogctx.FromCtx(ctx.Context).Info(err.Error())
+								logger.Error(err.Error(), "abi_provider", abiProvider)
 								return err
 							}
 

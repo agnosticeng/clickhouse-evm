@@ -5,7 +5,7 @@ go 1.23.2
 require (
 	github.com/ClickHouse/ch-go v0.62.0
 	github.com/agnosticeng/concu v0.0.2
-	github.com/agnosticeng/evmabi v0.3.0
+	github.com/agnosticeng/evmabi v0.3.1
 	github.com/agnosticeng/panicsafe v0.5.0
 	github.com/agnosticeng/slogcli v0.1.1
 	github.com/bytedance/sonic v1.12.6

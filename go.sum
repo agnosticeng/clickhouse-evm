@@ -4,8 +4,8 @@ github.com/Yiling-J/theine-go v0.6.0 h1:jv7V/tcD6ijL0T4kfbJDKP81TCZBkoriNTPSqwiv
 github.com/Yiling-J/theine-go v0.6.0/go.mod h1:mdch1vjgGWd7s3rWKvY+MF5InRLfRv/CWVI9RVNQ8wY=
 github.com/agnosticeng/concu v0.0.2 h1:Pjoza9/t+Lc+u/moe4PcDw8ggdFeSCWAghGV6CNQPjc=
 github.com/agnosticeng/concu v0.0.2/go.mod h1:PTaEQFW0n3agQcpeVboRsVaJoBLzswiNm987lLNUDmA=
-github.com/agnosticeng/evmabi v0.3.0 h1:Z61Ufm7J+Z2XnIhWIRC+Z7wmbQUIwit6wvSJYleGnjI=
-github.com/agnosticeng/evmabi v0.3.0/go.mod h1:uvOKmAVqnAyNVdXeDRJBbxs92em8j0GwdgBbiKZOAro=
+github.com/agnosticeng/evmabi v0.3.1 h1:HootjteYkyI0A//Tapfdm1B/V3uy5d2jEkFmRLEZdG8=
+github.com/agnosticeng/evmabi v0.3.1/go.mod h1:uvOKmAVqnAyNVdXeDRJBbxs92em8j0GwdgBbiKZOAro=
 github.com/agnosticeng/panicsafe v0.5.0 h1:rStbOzyOQ4I0fSXElcq1zX81XyxHvQQoNxD0XZl/6/k=
 github.com/agnosticeng/panicsafe v0.5.0/go.mod h1:dXWabTdUv+kz5D/Uj+SHc3C6H6O/XpnLStkrRalYxZk=
 github.com/agnosticeng/slogcli v0.1.1 h1:rS0jde4Ha3GafF7Ww25YQANqQDz9QnIYZ1M5ngnM8Vk=

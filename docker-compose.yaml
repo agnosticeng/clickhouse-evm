@@ -2,22 +2,15 @@ version: '3.8'
 
 services:
   clickhouse-server:
-    image: clickhouse/clickhouse-server:24.10
+    image: clickhouse/clickhouse-server:24.12 
     restart: always
+    command: /bin/bash -c "tar -xvzf /tmp/bundle.tar.gz -C / && /entrypoint.sh"
     ports: 
       - '127.0.0.1:9000:9000'
+      - '127.0.0.1:8123:8123'
     volumes:
       - ./tmp/clickhouse-server-custom-config.xml:/etc/clickhouse-server/config.d/clickhouse-server-custom-config.xml:ro
-      - '${BUNDLE_PATH:-./tmp/bundle}/etc/clickhouse-server/ethereum_rpc_call_function.xml:/etc/clickhouse-server/ethereum_rpc_call_function.xml:ro'
-      - '${BUNDLE_PATH:-./tmp/bundle}/etc/clickhouse-server/ethereum_rpc_function.xml:/etc/clickhouse-server/ethereum_rpc_function.xml:ro'
-      - '${BUNDLE_PATH:-./tmp/bundle}/etc/clickhouse-server/evm_decode_call_function.xml:/etc/clickhouse-server/evm_decode_call_function.xml:ro'
-      - '${BUNDLE_PATH:-./tmp/bundle}/etc/clickhouse-server/evm_decode_event_function.xml:/etc/clickhouse-server/evm_decode_event_function.xml:ro'
-      - '${BUNDLE_PATH:-./tmp/bundle}/etc/clickhouse-server/keccak256_function.xml:/etc/clickhouse-server/keccak256_function.xml:ro'
-      - '${BUNDLE_PATH:-./tmp/bundle}/var/lib/clickhouse/user_defined/function_evm_hex_decode_int.sql:/var/lib/clickhouse/user_defined/function_evm_hex_decode_int.sql:ro'
-      - '${BUNDLE_PATH:-./tmp/bundle}/var/lib/clickhouse/user_defined/function_evm_hex_decode.sql:/var/lib/clickhouse/user_defined/function_evm_hex_decode.sql:ro'
-      - '${BUNDLE_PATH:-./tmp/bundle}/var/lib/clickhouse/user_defined/function_evm_hex_encode_int.sql:/var/lib/clickhouse/user_defined/function_evm_hex_encode_int.sql:ro'
-      - '${BUNDLE_PATH:-./tmp/bundle}/var/lib/clickhouse/user_defined/function_evm_hex_encode.sql:/var/lib/clickhouse/user_defined/function_evm_hex_encode.sql:ro'
-      - '${BUNDLE_PATH:-./tmp/bundle}/var/lib/clickhouse/user_scripts/agnostic-clickhouse-udf:/var/lib/clickhouse/user_scripts/agnostic-clickhouse-udf:ro'
+      - ${BUNDLE_PATH:-./tmp/bundle.tar.gz}:/tmp/bundle.tar.gz:ro
     environment:
       - LOG_LEVEL=${LOG_LEVEL}
       - LOG_PATH=${LOG_PATH}

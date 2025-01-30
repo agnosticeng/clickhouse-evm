@@ -2,7 +2,6 @@ package evm_decode_event
 
 import (
 	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -14,6 +13,7 @@ import (
 	"github.com/agnosticeng/evmabi/encoding/json"
 	"github.com/agnosticeng/panicsafe"
 	"github.com/urfave/cli/v2"
+	slogctx "github.com/veqryn/slog-context"
 )
 
 func Command() *cli.Command {
@@ -44,7 +44,8 @@ func Command() *cli.Command {
 				)
 
 				var (
-					buf proto.Buffer
+					logger = slogctx.FromCtx(ctx.Context)
+					buf    proto.Buffer
 
 					inputTopicsCol  = proto.NewArray(new(proto.ColFixedStr32))
 					inputDataCol    = new(proto.ColBytes)
@@ -99,7 +100,8 @@ func Command() *cli.Command {
 							p, err := abiProviderCache(abiProvider)
 
 							if err != nil {
-								return fmt.Errorf("failed to parse ABI provider '%s': %w", abiProvider, err)
+								logger.Error(err.Error(), "abi_provider", abiProvider)
+								return err
 							}
 
 							evts, err := p.Events(string(topics[0][:]))

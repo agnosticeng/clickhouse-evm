@@ -1,14 +1,21 @@
 <functions>
     <function>
-        <type>executable_pool</type>
-        <pool_size>0</pool_size>
         <name>keccak256</name>
+        <type>executable_pool</type>
+        <format>Native</format>
+        <stderr_reaction>log</stderr_reaction>
+        <command>agnostic-clickhouse-udf function keccak256</command>
+
+        <pool_size>16</pool_size>
+        <max_command_execution_time>60</max_command_execution_time>
+        <command_read_timeout>10000</command_read_timeout>
+        <command_write_timeout>10000</command_write_timeout>
+
         <argument>
             <name>str</name>
             <type>String</type>
         </argument>
+
         <return_type>String</return_type>
-        <format>Native</format>
-        <command>agnostic-clickhouse-udf function keccak256</command>
     </function>
 </functions>

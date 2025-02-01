@@ -8,11 +8,13 @@ import (
 type CallOptionsFunc func(*CallOptions)
 
 type CallOptions struct {
-	maxBatchSize          int
-	maxConcurrentRequests int
-	disableBatch          bool
-	failOnError           bool
-	failOnNull            bool
+	maxBatchSize            int
+	maxConcurrentRequests   int
+	disableBatch            bool
+	failOnError             bool
+	failOnRetryableError    bool
+	failOnNull              bool
+	retryableErrorPredicate func(error) bool
 }
 
 func (opts *CallOptions) ParseFromEndpoint(endpoint string) error {
@@ -57,6 +59,14 @@ func (opts *CallOptions) ParseFromEndpoint(endpoint string) error {
 			return err
 		} else {
 			opts.failOnError = b
+		}
+	}
+
+	if s := frag.Get("fail-on-retryable-error"); len(s) > 0 {
+		if b, err := strconv.ParseBool(s); err != nil {
+			return err
+		} else {
+			opts.failOnRetryableError = b
 		}
 	}
 
@@ -108,5 +118,11 @@ func WithFailOnError(b bool) CallOptionsFunc {
 func WithFailOnNull(b bool) CallOptionsFunc {
 	return func(opts *CallOptions) {
 		opts.failOnNull = b
+	}
+}
+
+func WithRetryableErrorPredicate(f func(error) bool) CallOptionsFunc {
+	return func(opts *CallOptions) {
+		opts.retryableErrorPredicate = f
 	}
 }

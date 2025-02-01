@@ -1,10 +1,16 @@
 <functions>
     <function>
-        <type>executable_pool</type>
-        <pool_size>64</pool_size>
-        <max_command_execution_time>300</max_command_execution_time>
-        <command_read_timeout>300000</command_read_timeout>
         <name>ethereum_rpc</name>
+        <type>executable_pool</type>
+        <format>Native</format>
+        <stderr_reaction>log</stderr_reaction>
+        <command>agnostic-clickhouse-udf function ethereum-rpc</command>
+
+        <pool_size>16</pool_size>
+        <max_command_execution_time>300</max_command_execution_time>
+        <command_read_timeout>180000</command_read_timeout>
+        <command_write_timeout>60000</command_write_timeout>
+
         <argument>
             <name>method</name>
             <type>String</type>
@@ -17,8 +23,7 @@
             <name>endpoint</name>
             <type>String</type>
         </argument>
+
         <return_type>String</return_type>
-        <format>Native</format>
-        <command>agnostic-clickhouse-udf function ethereum-rpc</command>
     </function>
 </functions>

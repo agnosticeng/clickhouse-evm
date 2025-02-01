@@ -90,7 +90,7 @@ func (c *HTTPClient) doBatchCall(ctx context.Context, endpoint string, batch Bat
 	}
 
 	if err := json.NewEncoder(&buf).Encode(batch); err != nil {
-		return err
+		return fmt.Errorf("failed to encode JSON request: %w", err)
 	}
 
 	if logger.Enabled(ctx, slog.LevelDebug) {
@@ -100,14 +100,14 @@ func (c *HTTPClient) doBatchCall(ctx context.Context, endpoint string, batch Bat
 	req, err := http.NewRequestWithContext(ctx, "POST", endpoint, &buf)
 
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to create new HTTP request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := c.client.Do(req)
 
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to send HTTP request: %w", err)
 	}
 
 	defer resp.Body.Close()
@@ -117,7 +117,7 @@ func (c *HTTPClient) doBatchCall(ctx context.Context, endpoint string, batch Bat
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&res); err != nil {
-		return err
+		return fmt.Errorf("failed to decode JSON response: %w", err)
 	}
 
 	if logger.Enabled(ctx, slog.Level(-10)) {
@@ -125,17 +125,13 @@ func (c *HTTPClient) doBatchCall(ctx context.Context, endpoint string, batch Bat
 	}
 
 	if len(res.Batch) == 0 && res.Message != nil {
-		return res.Message.Error
+		return fmt.Errorf("JSONRPC error response: %s", res.Message.Error)
 	}
 
-	if opts.failOnError || opts.failOnNull {
-		for _, item := range res.Batch {
-			if opts.failOnError && item.Error != nil {
-				return item.Error
-			}
-
-			if opts.failOnNull && (item.Result == nil || bytes.Equal(item.Result, []byte(`null`))) {
-				return fmt.Errorf("null result")
+	if opts.failOnError || opts.failOnNull || opts.failOnRetryableError {
+		for _, msg := range res.Batch {
+			if err := processMessageError(&msg, opts); err != nil {
+				return err
 			}
 		}
 	}
@@ -198,17 +194,32 @@ func (c *HTTPClient) doCall(ctx context.Context, endpoint string, msg *Message, 
 		logger.Log(ctx, slog.Level(-10), "JSON-RPC response", "endpoint", endpoint, "content", lo.Must(json.Marshal(msg)))
 	}
 
-	if opts.failOnError && msg.Error != nil {
-		return msg.Error
-	}
-
-	if opts.failOnNull && (msg.Result == nil || bytes.Equal(msg.Result, []byte(`null`))) {
-		return fmt.Errorf("null result")
+	if opts.failOnError || opts.failOnNull || opts.failOnRetryableError {
+		if err := processMessageError(msg, opts); err != nil {
+			return err
+		}
 	}
 
 	return nil
 }
 
 func (c *HTTPClient) Close() error {
+	return nil
+}
+
+func processMessageError(msg *Message, opts CallOptions) error {
+	switch {
+	case opts.failOnError && msg.Error != nil:
+		return msg.Error
+
+	case opts.failOnRetryableError && msg.Error != nil && opts.retryableErrorPredicate != nil:
+		if opts.retryableErrorPredicate(msg.Error) {
+			return msg.Error
+		}
+
+	case opts.failOnNull && (msg.Result == nil || bytes.Equal(msg.Result, []byte(`null`))):
+		return fmt.Errorf("null result")
+	}
+
 	return nil
 }

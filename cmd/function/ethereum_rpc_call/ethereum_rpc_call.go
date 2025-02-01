@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/ClickHouse/ch-go/proto"
+	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/ethereum_rpc"
 	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/jsonrpc"
 	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/jsonrpc_cli"
 	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/types"
@@ -67,6 +68,7 @@ func Command() *cli.Command {
 					}
 				)
 
+				callOpts = append(callOpts, jsonrpc.WithRetryableErrorPredicate(ethereum_rpc.RetryableErrorPredicate))
 				client, err := jsonrpc.NewHTTPClient(ctx.Context)
 
 				if err != nil {
@@ -128,14 +130,14 @@ func Command() *cli.Command {
 						inputs, err = prepareParams(meth, inputs)
 
 						if err != nil {
-							return err
+							return fmt.Errorf("failed to prepare params: %v", err)
 						}
 
 						var inputData []byte
 						inputData = append(inputData, meth.ID...)
 
 						if d, err := meth.Inputs.Pack(inputs...); err != nil {
-							return err
+							return fmt.Errorf("failed to pack inputs values: %v", err)
 						} else {
 							inputData = append(inputData, d...)
 						}
@@ -161,7 +163,7 @@ func Command() *cli.Command {
 					}
 
 					if err := client.BatchCall(ctx.Context, endpoint, batch, callOpts...); err != nil {
-						return err
+						return fmt.Errorf("batch call failed: %w", err)
 					}
 
 					for i := 0; i < input.Rows(); i++ {
@@ -169,7 +171,7 @@ func Command() *cli.Command {
 						js, err := stdjson.Marshal(res)
 
 						if err != nil {
-							return err
+							return fmt.Errorf("failed to decode result: %w", err)
 						}
 
 						outputResultCol.Append(js)

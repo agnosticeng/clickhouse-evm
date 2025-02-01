@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/ClickHouse/ch-go/proto"
+	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/ethereum_rpc"
 	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/jsonrpc"
 	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/jsonrpc_cli"
 	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/types"
@@ -45,6 +46,7 @@ func Command() *cli.Command {
 					}
 				)
 
+				callOpts = append(callOpts, jsonrpc.WithRetryableErrorPredicate(ethereum_rpc.RetryableErrorPredicate))
 				client, err := jsonrpc.NewHTTPClient(ctx.Context)
 
 				if err != nil {

@@ -85,11 +85,18 @@ func Command() *cli.Command {
 							continue
 						}
 
+						var str = fullsig.StringifyEvent(evt)
+
+						if _, err := fullsig.ParseEvent(str); err != nil {
+							outputResultCol.Append((&types.Result{Error: err.Error()}).ToJSON())
+							continue
+						}
+
 						outputResultCol.Append((&types.Result{
 							Value: &Signature{
 								Selector:  evt.ID.Hex(),
 								Signature: evt.Sig,
-								FullSig:   fullsig.StringifyEvent(evt),
+								FullSig:   str,
 							},
 						}).ToJSON())
 
@@ -101,11 +108,18 @@ func Command() *cli.Command {
 							continue
 						}
 
+						var str = fullsig.StringifyMethod(meth)
+
+						if _, err := fullsig.ParseMethod(str); err != nil {
+							outputResultCol.Append((&types.Result{Error: err.Error()}).ToJSON())
+							continue
+						}
+
 						outputResultCol.Append((&types.Result{
 							Value: &Signature{
 								Selector:  hexutil.Encode(meth.ID),
 								Signature: meth.Sig,
-								FullSig:   fullsig.StringifyMethod(meth),
+								FullSig:   str,
 							},
 						}).ToJSON())
 

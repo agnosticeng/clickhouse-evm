@@ -20,10 +20,6 @@ ethereum_rpc_call(contract_address, fullsig, data, block_number, endpoint)
 
 - The response to the RPC call, wrapped in a [`Result`](../error_handling.md).
 
-
-
-
-
 **Example**
 
 The below example fetch balance of [USDT](https://etherscan.io/token/0xdac17f958d2ee523a2206206994597c13d831ec7) tokens of the [Kraken 4 wallet](https://etherscan.io/address/0x267be1c1d684f78cb4f6a176c4911b741e4ffdc0) at latest block.

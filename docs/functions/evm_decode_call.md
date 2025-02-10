@@ -12,7 +12,7 @@ select evm_decode_call(input_data, output_data, [dec0, dec1, ...])
 
 - `input_data` - EVM-encoded input data of the call. [String](https://clickhouse.com/docs/en/sql-reference/data-types/string)
 - `output_data` - EVM-encoded output data of the call. [String](https://clickhouse.com/docs/en/sql-reference/data-types/string)
-- `decoders` - An array of decoders for the call. A decoded can be either a [fullsig](../evm_fullsig.md) or the URL of a JSON-encoded ABI.
+- `decoders` - An array of decoders for the call. A decoded can be either a [fullsig](../evm_fullsig.md) or the URL of a JSON-encoded ABI. [Array(String)](https://clickhouse.com/docs/en/sql-reference/data-types/array)
 
 **Returned value**
 

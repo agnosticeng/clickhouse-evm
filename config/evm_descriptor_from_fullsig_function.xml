@@ -15,10 +15,6 @@
             <name>fullsig</name>
             <type>String</type>
         </argument>
-        <argument>
-            <name>type</name>
-            <type>String</type>
-        </argument>
 
         <return_type>String</return_type>
     </function>

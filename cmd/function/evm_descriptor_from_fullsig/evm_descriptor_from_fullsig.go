@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"github.com/ClickHouse/ch-go/proto"
 	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/types"
@@ -22,12 +23,10 @@ func Command() *cli.Command {
 				buf proto.Buffer
 
 				inputFullSigCol = new(proto.ColStr)
-				inputTypeCol    = new(proto.ColStr)
 				outputResultCol = new(proto.ColBytes)
 
 				input = proto.Results{
 					{Name: "fullsig", Data: inputFullSigCol},
-					{Name: "type", Data: inputTypeCol},
 				}
 
 				output = proto.Input{
@@ -54,11 +53,11 @@ func Command() *cli.Command {
 				}
 
 				for i := 0; i < input.Rows(); i++ {
-					var _type = inputTypeCol.Row(i)
+					var s = inputFullSigCol.Row(i)
 
-					switch _type {
-					case "event":
-						evt, err := fullsig.ParseEvent(inputFullSigCol.Row(i))
+					switch {
+					case strings.HasPrefix(s, "event"):
+						evt, err := fullsig.ParseEvent(s)
 
 						if err != nil {
 							outputResultCol.Append((&types.Result{Error: err.Error()}).ToJSON())
@@ -74,8 +73,8 @@ func Command() *cli.Command {
 
 						outputResultCol.Append((&types.Result{Value: m}).ToJSON())
 
-					case "function":
-						meth, err := fullsig.ParseMethod(inputFullSigCol.Row(i))
+					case strings.HasPrefix(s, "function"):
+						meth, err := fullsig.ParseMethod(s)
 
 						if err != nil {
 							outputResultCol.Append((&types.Result{Error: err.Error()}).ToJSON())
@@ -92,7 +91,7 @@ func Command() *cli.Command {
 						outputResultCol.Append((&types.Result{Value: m}).ToJSON())
 
 					default:
-						outputResultCol.Append((&types.Result{Error: fmt.Sprintf("unknown type: %s", _type)}).ToJSON())
+						outputResultCol.Append((&types.Result{Error: fmt.Sprintf("unknown type: %s", s)}).ToJSON())
 						continue
 					}
 				}
@@ -113,7 +112,6 @@ func Command() *cli.Command {
 				proto.Reset(
 					&buf,
 					inputFullSigCol,
-					inputTypeCol,
 					outputResultCol,
 				)
 

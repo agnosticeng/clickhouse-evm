@@ -9,6 +9,7 @@ require (
 	github.com/agnosticeng/panicsafe v0.5.0
 	github.com/agnosticeng/slogcli v0.1.1
 	github.com/bytedance/sonic v1.12.6
+	github.com/cenkalti/backoff/v5 v5.0.2
 	github.com/ethereum/go-ethereum v1.14.12
 	github.com/samber/lo v1.47.0
 	github.com/sourcegraph/conc v0.3.0
@@ -20,7 +21,6 @@ require (
 	github.com/Yiling-J/theine-go v0.6.0 // indirect
 	github.com/bytedance/sonic/loader v0.2.1 // indirect
 	github.com/bzick/tokenizer v1.4.7 // indirect
-	github.com/cenkalti/backoff/v5 v5.0.2 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
 	github.com/cloudwego/iasm v0.2.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.5 // indirect

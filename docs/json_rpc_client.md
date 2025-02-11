@@ -31,6 +31,13 @@ ___
 | `fail-on-error`            | `ETHEREUM_RPC_FAIL_ON_ERROR`    | `fail-on-error`           | bool   | `false`       | Fails the entire batch if at least one RPC call encounters an error. |
 | `fail-on-retryable-error`  | `ETHEREUM_RPC_FAIL_ON_RETRYABLE_ERROR` | `fail-on-retryable-error` | bool   | `false`       | Similar to `fail-on-error`, but only fails on **retryable** errors (which vary by blockchain). For example, **Arbitrum** nodes may temporarily return `intrinsic gas too low` under certain conditions. |
 | `fail-on-null`             | `ETHEREUM_RPC_FAIL_ON_NULL`     | `fail-on-null`            | bool   | `false`       | Fails the batch if any RPC call returns a `null` response. |
+| `retryable-status-codes` | `ETHEREUM_RPC_RETRYABLE_STATUS_CODES` | `retryable-status-codes` | []int | `[429, 502, 503, 504]` | The list of HTTP status codes that will trigger a retry. |
+| `retry-initial-interval` | `ETHEREUM_RPC_RETRY_INITIAL_INTERVAL` | `retry-initial-interval` | duration | `0.5s` | The initial interval of the exponential backoff. |
+| `retry-randomization-factor` | `ETHEREUM_RPC_RETRY_RANDOMIZATION_FACTOR` | `retry-randomization-factor` | float64 | `0.5` | The randomizatiob factor of the exponential backoff. |
+| `retry-multiplier` | `ETHEREUM_RPC_RETRY_MULTIPLIER` | `retry-multiplier` | float64 | `1.5` | The multiplier of the exponential backoff. |
+| `retry-max-interval` | `ETHEREUM_RPC_RETRY_MAX_INTERVAL` | `retry-max-interval` | duration | `60s` | The max interval of the exponential backoff. |
+| `retry-max-elapsed-time` | `ETHEREUM_RPC_RETRY_MAX_ELAPSED_TIME` | `retry-max-elapsed-time` | duration | `300s` | The max elapsed time of the exponential backoff. |
+| `retry-max-tries` | `ETHEREUM_RPC_RETRY_MAX_TRIES` | `retry-max-tries` | uint | `20` | The max number of tries of the exponential backoff. |
 
 ___
 

@@ -60,7 +60,7 @@ func Flags() []cli.Flag {
 		},
 		&cli.Float64Flag{
 			Name:    "retry-multiplier",
-			Value:   0.5,
+			Value:   1.5,
 			EnvVars: []string{"ETHEREUM_RPC_RETRY_MULTIPLIER"},
 		},
 		&cli.DurationFlag{
@@ -70,7 +70,7 @@ func Flags() []cli.Flag {
 		},
 		&cli.DurationFlag{
 			Name:    "retry-max-elapsed-time",
-			Value:   15 * time.Minute,
+			Value:   300 * time.Second,
 			EnvVars: []string{"ETHEREUM_RPC_RETRY_MAX_ELAPSED_TIME"},
 		},
 		&cli.UintFlag{

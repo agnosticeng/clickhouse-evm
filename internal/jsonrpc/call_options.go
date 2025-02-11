@@ -262,7 +262,7 @@ func (opts *CallOptions) GetRetryMaxElapsedTimeOrDefault() time.Duration {
 	if opts.retryMaxElapsedTime > 0 {
 		return opts.retryMaxElapsedTime
 	} else {
-		return time.Minute * 15
+		return time.Second * 300
 	}
 }
 

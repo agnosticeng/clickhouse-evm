@@ -20,6 +20,7 @@ require (
 	github.com/Yiling-J/theine-go v0.6.0 // indirect
 	github.com/bytedance/sonic/loader v0.2.1 // indirect
 	github.com/bzick/tokenizer v1.4.7 // indirect
+	github.com/cenkalti/backoff/v5 v5.0.2 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
 	github.com/cloudwego/iasm v0.2.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.5 // indirect

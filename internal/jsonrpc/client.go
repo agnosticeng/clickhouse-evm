@@ -7,7 +7,9 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"strconv"
 
+	"github.com/cenkalti/backoff/v5"
 	"github.com/samber/lo"
 	"github.com/sourcegraph/conc/pool"
 	slogctx "github.com/veqryn/slog-context"
@@ -93,8 +95,8 @@ func (c *HTTPClient) doBatchCall(ctx context.Context, endpoint string, batch Bat
 		return fmt.Errorf("failed to encode JSON request: %w", err)
 	}
 
-	if logger.Enabled(ctx, slog.LevelDebug) {
-		logger.Debug("JSON-RPC request", "endpoint", endpoint, "content", buf.String())
+	if logger.Enabled(ctx, slog.Level(-8)) {
+		logger.Log(ctx, slog.Level(-8), "JSON-RPC request", "endpoint", endpoint, "content", buf.String())
 	}
 
 	req, err := http.NewRequestWithContext(ctx, "POST", endpoint, &buf)
@@ -104,17 +106,22 @@ func (c *HTTPClient) doBatchCall(ctx context.Context, endpoint string, batch Bat
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	resp, err := c.client.Do(req)
+
+	resp, err := backoff.Retry(
+		ctx,
+		func() (*http.Response, error) {
+			return c.sendRequest(logger, req, opts)
+		},
+		backoff.WithBackOff(opts.ToExponentialBackoff()),
+		backoff.WithMaxElapsedTime(opts.GetRetryMaxElapsedTimeOrDefault()),
+		backoff.WithMaxTries(opts.GetRetryMaxTriesOrDefault()),
+	)
 
 	if err != nil {
 		return fmt.Errorf("failed to send HTTP request: %w", err)
 	}
 
 	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		return fmt.Errorf("bad status code: %d", resp.StatusCode)
-	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&res); err != nil {
 		return fmt.Errorf("failed to decode JSON response: %w", err)
@@ -174,17 +181,22 @@ func (c *HTTPClient) doCall(ctx context.Context, endpoint string, msg *Message, 
 	}
 
 	httpReq.Header.Set("Content-Type", "application/json")
-	httpResp, err := c.client.Do(httpReq)
+
+	httpResp, err := backoff.Retry(
+		ctx,
+		func() (*http.Response, error) {
+			return c.sendRequest(logger, httpReq, opts)
+		},
+		backoff.WithBackOff(opts.ToExponentialBackoff()),
+		backoff.WithMaxElapsedTime(opts.GetRetryMaxElapsedTimeOrDefault()),
+		backoff.WithMaxTries(opts.GetRetryMaxTriesOrDefault()),
+	)
 
 	if err != nil {
 		return err
 	}
 
 	defer httpResp.Body.Close()
-
-	if httpResp.StatusCode != 200 {
-		return fmt.Errorf("bad status code: %d", httpResp.StatusCode)
-	}
 
 	if err := json.NewDecoder(httpResp.Body).Decode(&msg); err != nil {
 		return err
@@ -201,6 +213,36 @@ func (c *HTTPClient) doCall(ctx context.Context, endpoint string, msg *Message, 
 	}
 
 	return nil
+}
+
+func (c *HTTPClient) sendRequest(logger *slog.Logger, req *http.Request, opts CallOptions) (*http.Response, error) {
+	var resp, err = c.client.Do(req)
+
+	if err != nil {
+		return nil, backoff.Permanent(err)
+	}
+
+	if resp.StatusCode == 200 {
+		return resp, nil
+	}
+
+	defer resp.Body.Close()
+
+	if !lo.Contains(opts.retryableStatusCodes, resp.StatusCode) {
+		return nil, backoff.Permanent(fmt.Errorf("bad status code: %d", resp.StatusCode))
+	}
+
+	if resp.StatusCode == 429 {
+		i, err := strconv.ParseInt(resp.Header.Get("Retry-After"), 10, 64)
+
+		if err == nil && i > 0 {
+			logger.Debug("retry", "status_code", resp.StatusCode, "retry_after", i)
+			return nil, backoff.RetryAfter(int(i))
+		}
+	}
+
+	logger.Debug("retry", "status_code", resp.StatusCode)
+	return nil, fmt.Errorf("bad status code: %d", resp.StatusCode)
 }
 
 func (c *HTTPClient) Close() error {

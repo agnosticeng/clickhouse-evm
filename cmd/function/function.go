@@ -1,9 +1,11 @@
 package function
 
 import (
+	"github.com/agnosticeng/agnostic-clickhouse-udf/cmd/function/ethereum_decode_tx"
 	"github.com/agnosticeng/agnostic-clickhouse-udf/cmd/function/ethereum_rpc_call"
 	ethereum_rpc "github.com/agnosticeng/agnostic-clickhouse-udf/cmd/function/ethreum_rpc"
 	"github.com/agnosticeng/agnostic-clickhouse-udf/cmd/function/evm_decode_call"
+	"github.com/agnosticeng/agnostic-clickhouse-udf/cmd/function/evm_decode_calldata"
 	"github.com/agnosticeng/agnostic-clickhouse-udf/cmd/function/evm_decode_event"
 	"github.com/agnosticeng/agnostic-clickhouse-udf/cmd/function/evm_descriptor_from_fullsig"
 	"github.com/agnosticeng/agnostic-clickhouse-udf/cmd/function/evm_signature_from_descriptor"
@@ -22,6 +24,8 @@ func Command() *cli.Command {
 			ethereum_rpc_call.Command(),
 			evm_signature_from_descriptor.Command(),
 			evm_descriptor_from_fullsig.Command(),
+			ethereum_decode_tx.Command(),
+			evm_decode_calldata.Command(),
 		},
 	}
 }

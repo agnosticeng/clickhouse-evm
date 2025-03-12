@@ -24,7 +24,6 @@ func Command() *cli.Command {
 		Flags: jsonrpc_cli.Flags(),
 		Action: func(ctx *cli.Context) error {
 			return panicsafe.Recover(func() error {
-
 				var (
 					defaultEndpoint = ctx.String("endpoint")
 					callOpts        = jsonrpc_cli.CallOptionsFromContext(ctx)

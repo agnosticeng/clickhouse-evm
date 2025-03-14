@@ -1,6 +1,7 @@
 package function
 
 import (
+	"github.com/agnosticeng/agnostic-clickhouse-udf/cmd/function/convert_format"
 	"github.com/agnosticeng/agnostic-clickhouse-udf/cmd/function/ethereum_decode_tx"
 	"github.com/agnosticeng/agnostic-clickhouse-udf/cmd/function/ethereum_rpc_call"
 	ethereum_rpc "github.com/agnosticeng/agnostic-clickhouse-udf/cmd/function/ethreum_rpc"
@@ -26,6 +27,7 @@ func Command() *cli.Command {
 			evm_descriptor_from_fullsig.Command(),
 			ethereum_decode_tx.Command(),
 			evm_decode_calldata.Command(),
+			convert_format.Command(),
 		},
 	}
 }

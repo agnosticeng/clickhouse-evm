@@ -1,0 +1,29 @@
+<functions>
+    <function>
+        <name>convert_format</name>
+        <type>executable_pool</type>
+        <format>Native</format>
+        <stderr_reaction>log</stderr_reaction>
+        <command>agnostic-clickhouse-udf function convert-format</command>
+
+        <pool_size>4</pool_size>
+        <max_command_execution_time>10</max_command_execution_time>
+
+        <argument>
+            <name>from_format</name>
+            <type>String</type>
+        </argument>
+
+        <argument>
+            <name>to_format</name>
+            <type>String</type>
+        </argument>
+
+        <argument>
+            <name>str</name>
+            <type>String</type>
+        </argument>
+
+        <return_type>String</return_type>
+    </function>
+</functions>

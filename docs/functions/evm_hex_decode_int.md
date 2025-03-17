@@ -1,6 +1,6 @@
 ### evm_hex_decode_int
 
-Decodes 0x-prefixed hexadecimal encoded strings.
+Decodes 0x-prefixed hexadecimal encoded strings to integers.
 
 **Syntax**
 

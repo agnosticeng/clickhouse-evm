@@ -7,3 +7,4 @@ venv
 agnostic-clickhouse-udf
 .envrc
 dist/
+clickhouse

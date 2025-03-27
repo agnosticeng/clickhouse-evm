@@ -11,7 +11,9 @@ import (
 	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/types"
 	"github.com/agnosticeng/concu/memo"
 	"github.com/agnosticeng/evmabi/encoding/json"
+	"github.com/agnosticeng/evmabi/fullsig"
 	"github.com/agnosticeng/panicsafe"
+	"github.com/bytedance/sonic/ast"
 	"github.com/urfave/cli/v2"
 	slogctx "github.com/veqryn/slog-context"
 )
@@ -122,6 +124,7 @@ func Command() *cli.Command {
 									continue
 								}
 
+								n.Set("fullsig", ast.NewString(fullsig.StringifyEvent(evt)))
 								outputResultCol.Append((&types.Result{Value: &n}).ToJSON())
 								decoded = true
 								break decodeLoop

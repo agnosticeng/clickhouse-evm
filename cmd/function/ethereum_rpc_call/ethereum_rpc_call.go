@@ -309,7 +309,11 @@ func prepareBytes(v interface{}) ([]byte, error) {
 		return nil, fmt.Errorf("invalid string: %v", v)
 	}
 
-	return common.Hex2Bytes(s), nil
+	if len(s) >= 2 && s[0:2] == "0x" {
+		return hexutil.MustDecode(s), nil
+	}
+
+	return []byte(s), nil
 }
 
 func prepareAddress(v interface{}) (common.Address, error) {
@@ -328,7 +332,9 @@ func prepareBigInt(v interface{}) (*big.Int, error) {
 		return hexutil.DecodeBig(v)
 	case uint64:
 		return big.NewInt(0).SetUint64(v), nil
+	case float64:
+		return big.NewInt(0).SetInt64(int64(v)), nil
 	default:
-		return nil, fmt.Errorf("invalid big int: %v", v)
+		return nil, fmt.Errorf("invalid big int: %v(%s)", v, reflect.TypeOf(v))
 	}
 }

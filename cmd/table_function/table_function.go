@@ -1,7 +1,7 @@
 package table_function
 
 import (
-	"github.com/agnosticeng/agnostic-clickhouse-udf/cmd/table_function/ethereum_rpc_filter"
+	"github.com/agnosticeng/clickhouse-evm/cmd/table_function/ethereum_rpc_filter"
 	"github.com/urfave/cli/v2"
 )
 

@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/indexed_abi"
+	"github.com/agnosticeng/clickhouse-evm/internal/indexed_abi"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 )
 

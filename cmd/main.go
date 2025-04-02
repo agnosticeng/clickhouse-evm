@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	"github.com/agnosticeng/agnostic-clickhouse-udf/cmd/function"
-	"github.com/agnosticeng/agnostic-clickhouse-udf/cmd/table_function"
+	"github.com/agnosticeng/clickhouse-evm/cmd/function"
+	"github.com/agnosticeng/clickhouse-evm/cmd/table_function"
 	"github.com/agnosticeng/panicsafe"
 	"github.com/agnosticeng/slogcli"
 	"github.com/urfave/cli/v2"
@@ -13,7 +13,7 @@ import (
 
 func main() {
 	app := cli.App{
-		Name:   "agnostic-clickhouse-udf",
+		Name:   "clickhouse-evm",
 		Flags:  slogcli.SlogFlags(),
 		Before: slogcli.SlogBefore,
 		After:  slogcli.SlogAfter,

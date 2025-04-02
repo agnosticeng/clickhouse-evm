@@ -3,10 +3,10 @@ package impl
 import (
 	"strings"
 
-	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/abi_provider"
-	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/abi_provider/impl/file"
-	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/abi_provider/impl/fullsig"
-	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/abi_provider/impl/noop"
+	"github.com/agnosticeng/clickhouse-evm/internal/abi_provider"
+	"github.com/agnosticeng/clickhouse-evm/internal/abi_provider/impl/file"
+	"github.com/agnosticeng/clickhouse-evm/internal/abi_provider/impl/fullsig"
+	"github.com/agnosticeng/clickhouse-evm/internal/abi_provider/impl/noop"
 )
 
 func NewABIProvider(s string) (abi_provider.ABIProvider, error) {

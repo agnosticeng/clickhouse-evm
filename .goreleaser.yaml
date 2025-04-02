@@ -17,7 +17,7 @@ builds:
       - v1
       - v3
     main: ./cmd
-    binary: /var/lib/clickhouse/user_scripts/agnostic-clickhouse-udf
+    binary: /var/lib/clickhouse/user_scripts/clickhouse-evm
 
 archives:
   - format: tar.gz

@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/ClickHouse/ch-go/proto"
-	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/jsonrpc"
-	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/jsonrpc_cli"
+	"github.com/agnosticeng/clickhouse-evm/internal/jsonrpc"
+	"github.com/agnosticeng/clickhouse-evm/internal/jsonrpc_cli"
 	"github.com/samber/lo"
 	"github.com/urfave/cli/v2"
 )

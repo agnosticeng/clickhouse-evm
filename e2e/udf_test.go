@@ -54,6 +54,9 @@ func TestE2E(t *testing.T) {
 		ContainerRequest: testcontainers.ContainerRequest{
 			Image:    "clickhouse/clickhouse-server:25.3",
 			Networks: []string{net.Name},
+			ExposedPorts: []string{
+				"9000",
+			},
 			Env: map[string]string{
 				"CLICKHOUSE_PASSWORD": "test",
 			},

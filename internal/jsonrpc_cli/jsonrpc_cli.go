@@ -3,7 +3,7 @@ package jsonrpc_cli
 import (
 	"time"
 
-	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/jsonrpc"
+	"github.com/agnosticeng/clickhouse-evm/internal/jsonrpc"
 	"github.com/urfave/cli/v2"
 )
 

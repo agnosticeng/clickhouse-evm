@@ -1,16 +1,16 @@
 package function
 
 import (
-	"github.com/agnosticeng/agnostic-clickhouse-udf/cmd/function/convert_format"
-	"github.com/agnosticeng/agnostic-clickhouse-udf/cmd/function/ethereum_decode_tx"
-	"github.com/agnosticeng/agnostic-clickhouse-udf/cmd/function/ethereum_rpc_call"
-	ethereum_rpc "github.com/agnosticeng/agnostic-clickhouse-udf/cmd/function/ethreum_rpc"
-	"github.com/agnosticeng/agnostic-clickhouse-udf/cmd/function/evm_decode_call"
-	"github.com/agnosticeng/agnostic-clickhouse-udf/cmd/function/evm_decode_calldata"
-	"github.com/agnosticeng/agnostic-clickhouse-udf/cmd/function/evm_decode_event"
-	"github.com/agnosticeng/agnostic-clickhouse-udf/cmd/function/evm_descriptor_from_fullsig"
-	"github.com/agnosticeng/agnostic-clickhouse-udf/cmd/function/evm_signature_from_descriptor"
-	"github.com/agnosticeng/agnostic-clickhouse-udf/cmd/function/keccak256"
+	"github.com/agnosticeng/clickhouse-evm/cmd/function/convert_format"
+	"github.com/agnosticeng/clickhouse-evm/cmd/function/ethereum_decode_tx"
+	"github.com/agnosticeng/clickhouse-evm/cmd/function/ethereum_rpc_call"
+	ethereum_rpc "github.com/agnosticeng/clickhouse-evm/cmd/function/ethreum_rpc"
+	"github.com/agnosticeng/clickhouse-evm/cmd/function/evm_decode_call"
+	"github.com/agnosticeng/clickhouse-evm/cmd/function/evm_decode_calldata"
+	"github.com/agnosticeng/clickhouse-evm/cmd/function/evm_decode_event"
+	"github.com/agnosticeng/clickhouse-evm/cmd/function/evm_descriptor_from_fullsig"
+	"github.com/agnosticeng/clickhouse-evm/cmd/function/evm_signature_from_descriptor"
+	"github.com/agnosticeng/clickhouse-evm/cmd/function/keccak256"
 	"github.com/urfave/cli/v2"
 )
 

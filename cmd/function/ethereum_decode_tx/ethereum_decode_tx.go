@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/ClickHouse/ch-go/proto"
-	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/types"
+	"github.com/agnosticeng/clickhouse-evm/internal/types"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/urfave/cli/v2"
 )

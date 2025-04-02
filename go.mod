@@ -1,4 +1,4 @@
-module github.com/agnosticeng/agnostic-clickhouse-udf
+module github.com/agnosticeng/clickhouse-evm
 
 go 1.23.2
 

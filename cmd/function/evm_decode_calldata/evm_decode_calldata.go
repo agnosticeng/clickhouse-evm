@@ -6,9 +6,9 @@ import (
 	"os"
 
 	"github.com/ClickHouse/ch-go/proto"
-	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/abi_provider"
-	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/abi_provider/impl"
-	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/types"
+	"github.com/agnosticeng/clickhouse-evm/internal/abi_provider"
+	"github.com/agnosticeng/clickhouse-evm/internal/abi_provider/impl"
+	"github.com/agnosticeng/clickhouse-evm/internal/types"
 	"github.com/agnosticeng/concu/memo"
 	"github.com/agnosticeng/evmabi/encoding/json"
 	"github.com/agnosticeng/evmabi/fullsig"

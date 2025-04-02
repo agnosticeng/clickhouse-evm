@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/ClickHouse/ch-go/proto"
-	"github.com/agnosticeng/agnostic-clickhouse-udf/internal/types"
+	"github.com/agnosticeng/clickhouse-evm/internal/types"
 	"github.com/agnosticeng/evmabi/abi"
 	"github.com/agnosticeng/evmabi/fullsig"
 	"github.com/urfave/cli/v2"

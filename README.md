@@ -14,9 +14,9 @@ Whether you're building blockchain explorers, indexing on-chain data, or running
     - [ethereum_decode_tx](./docs/functions/ethereum_decode_tx.md)
     - [evm_decode_call](./docs/functions/evm_decode_call.md)
     - [evm_decode_calldata](./docs/functions/evm_decode_calldata.md)
-    - [evm_decode_event](.docs/functions/evm_decode_event.md)
+    - [evm_decode_event](./docs/functions/evm_decode_event.md)
 - 🔄 Keccak-256 hashing UDF for topic and selector lookups (and many more)
-    - [keccak256](./docs/functions/keccack256.md)
+    - [keccak256](./docs/functions/keccak256.md) ([now avalaible natively in ClickHouse](https://github.com/ClickHouse/ClickHouse/pull/76669))
 - 🧱 Utility functions for working with EVM `0x-prefixed` hex encoding
     - [evm_hex_encode](./docs/functions/evm_hex_encode.md)
     - [evm_hex_decode](./docs/functions/evm_hex_decode.md)

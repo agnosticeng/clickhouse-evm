@@ -4,17 +4,32 @@
 
 ## Overview
 
-`clickhouse-evm` is a collection of high-performance **user-defined functions (UDFs)** that extend [ClickHouse](https://clickhouse.com/) with capabilities tailored for **Ethereum Virtual Machine (EVM)** data processing.
+`clickhouse-evm` is a collection of high-performance [**user-defined functions (UDFs)**](https://clickhouse.com/docs/sql-reference/functions/udf) that extend [ClickHouse](https://clickhouse.com/) with capabilities tailored for [**Ethereum Virtual Machine (EVM)**](https://ethereum.org/en/developers/docs/evm/) data processing.
 
-Whether you're building blockchain explorers, indexing on-chain data, or running deep analytics on Ethereum or other EVM-compatible chains, this project brings native decoding, parsing, and querying support into your ClickHouse workflows.
+Whether you're building blockchain explorers, indexing on-chain data, or running deep analytics on Ethereum or other EVM-compatible chains, this project brings native decoding, parsing, and querying support into your [ClickHouse](https://clickhouse.com/) workflows.
 
 ## ✨ Features
 
-- 🧠 Decode EVM calldata and logs directly within ClickHouse
-- 🔐 ABI decoding for function inputs, event topics, and return values
-- 🔄 Keccak-256 hashing UDF for topic and selector lookups
-- 🧱 Utility functions for working with Ethereum data types (e.g., addresses, uint256, bytes, etc.)
-- ⚡ **Fast, optimized RPC calls** to EVM-compatible nodes directly from ClickHouse queries
+- 🧠 Decode EVM calldata, logs and transactions directly within ClickHouse
+    - [ethereum_decode_tx](./docs/functions/ethereum_decode_tx.md)
+    - [evm_decode_call](./docs/functions/evm_decode_call.md)
+    - [evm_decode_calldata](./docs/functions/evm_decode_calldata.md)
+    - [evm_decode_event](.docs/functions/evm_decode_event.md)
+- 🔄 Keccak-256 hashing UDF for topic and selector lookups (and many more)
+    - [keccak256](./docs/functions/keccack256.md)
+- 🧱 Utility functions for working with EVM `0x-prefixed` hex encoding
+    - [evm_hex_encode](./docs/functions/evm_hex_encode.md)
+    - [evm_hex_decode](./docs/functions/evm_hex_decode.md)
+    - [evm_hex_encode_int](./docs/functions/evm_hex_encode_int.md)
+    - [evm_hex_decode_int](./docs/functions/evm_hex_decode_int.md)
+- Utility functions for working with [EVM `ABI` documents](https://docs.soliditylang.org/en/develop/abi-spec.html), [event and function signatures](./docs/evm_fullsig.md)
+    - [evm_descriptor_from_fullsig](./docs/functions/evm_descriptor_from_fullsig.md)
+    - [evm_signature_from_descriptor](./docs/functions/evm_signature_from_descriptor.md)
+    - [evm_hex_encode](./docs/functions/evm_hex_encode.md)
+    - [evm_hex_encode](./docs/functions/evm_hex_encode.md)
+- ⚡ [**Fast, optimized RPC calls**](./docs/json_rpc_client.md) to EVM-compatible nodes directly from ClickHouse queries
+    - [ethereum_rpc](./docs/functions/ethereum_rpc.md)
+    - [ethereum_rpc_call](./docs/functions/ethereum_rpc_call.md)
 - 🚀 Speeds up on-chain data analysis by reducing external parsing overhead
 
 ## 📦 Use Cases

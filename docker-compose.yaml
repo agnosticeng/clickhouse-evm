@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   clickhouse-server:
-    image: clickhouse/clickhouse-server:24.12 
+    image: clickhouse/clickhouse-server:25.3 
     restart: always
     command: /bin/bash -c "tar -xvzf /tmp/bundle.tar.gz -C / && /entrypoint.sh"
     ports: 
@@ -12,6 +12,7 @@ services:
       - ./tmp/clickhouse-server-custom-config.xml:/etc/clickhouse-server/config.d/clickhouse-server-custom-config.xml:ro
       - ${BUNDLE_PATH:-./tmp/bundle.tar.gz}:/tmp/bundle.tar.gz:ro
     environment:
+      - CLICKHOUSE_SKIP_USER_SETUP=1
       - LOG_LEVEL=${LOG_LEVEL}
 
   minio:

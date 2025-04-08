@@ -81,10 +81,16 @@ This runs ClickHouse in local mode using the provided config and a temporary sto
 
 ---
 
-#### 🐳 Run with `clickhouse-server` in Docker
+#### 🐳 Run in development mode with `clickhouse-server` in Docker
 
 ```sh
 docker compose up -d
 ```
 
 This launches a ClickHouse server inside a Docker container using the configuration and UDFs from the bundle.
+
+#### 🐳 Run in production mode with `clickhouse-server` in Docker (bundle fetched from latest release on GitHub)
+
+```sh
+docker compose -f docker-compose.prod.yaml up -d
+```

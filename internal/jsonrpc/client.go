@@ -260,7 +260,7 @@ func processMessageError(msg *Message, opts CallOptions) error {
 		}
 
 	case opts.failOnNull && (msg.Result == nil || bytes.Equal(msg.Result, []byte(`null`))):
-		return fmt.Errorf("null result")
+		return fmt.Errorf("%s(%s): null result", msg.Method, string(msg.Params))
 	}
 
 	return nil

@@ -8,6 +8,7 @@ build:
 bundle: build 
 	mkdir -p ${BUNDLE_PATH}
 	mkdir -p ${BUNDLE_PATH}/etc/clickhouse-server
+	mkdir -p ${BUNDLE_PATH}/var/lib/clickhouse/metadata
 	mkdir -p ${BUNDLE_PATH}/var/lib/clickhouse/user_defined
 	mkdir -p ${BUNDLE_PATH}/var/lib/clickhouse/user_scripts
 	cp bin/clickhouse-evm ${BUNDLE_PATH}/var/lib/clickhouse/user_scripts/

@@ -74,7 +74,13 @@ As a result, **decompressing the archive at the root of a ClickHouse server file
 #### ▶️ Run with `clickhouse-local`
 
 ```sh
-clickhouse local --config ./examples/clickhouse-local-config.xml --path tmp/clickhouse
+clickhouse local \
+    --log-level=debug \
+    --path tmp/clickhouse \
+    -- \
+    --user_scripts_path="./tmp/bundle/var/lib/clickhouse/user_scripts" \
+    --user_defined_executable_functions_config="./tmp/bundle/etc/clickhouse-server/*_function.*ml" \
+    --user_defined_path="./tmp/bundle/var/lib/clickhouse/user_defined"
 ```
 
 This runs ClickHouse in local mode using the provided config and a temporary storage path.
